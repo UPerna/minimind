@@ -18,6 +18,7 @@ class MiniMindConfig(PretrainedConfig):
         self.vocab_size = kwargs.get("vocab_size", 6400)
         self.bos_token_id = kwargs.get("bos_token_id", 1)
         self.eos_token_id = kwargs.get("eos_token_id", 2)
+        self.pad_token_id = kwargs.get("pad_token_id", 0)
         self.flash_attn = kwargs.get("flash_attn", True)
         self.num_attention_heads = kwargs.get("num_attention_heads", 8)
         self.num_key_value_heads = kwargs.get("num_key_value_heads", 4)
@@ -254,7 +255,9 @@ class MiniMindForCausalLM(PreTrainedModel, GenerationMixin):
         loss = None
         if labels is not None:
             x, y = logits[..., :-1, :].contiguous(), labels[..., 1:].contiguous()
-            loss = F.cross_entropy(x.view(-1, x.size(-1)), y.view(-1), ignore_index=-100)
+            nll = F.cross_entropy(x.view(-1, x.size(-1)), y.view(-1), ignore_index=-100, reduction='none')
+            sum_dtype = torch.float32 if nll.dtype in (torch.float16, torch.bfloat16) else nll.dtype
+            loss = nll.sum(dtype=sum_dtype) / y.ne(-100).sum().clamp_min(1)
         return MoeCausalLMOutputWithPast(loss=loss, aux_loss=aux_loss, logits=logits, past_key_values=past_key_values, hidden_states=hidden_states)
     
     # https://github.com/jingyaogong/minimind/discussions/611

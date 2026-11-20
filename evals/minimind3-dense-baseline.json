@@ -1,0 +1,183 @@
+{
+  "cases_sha256": "73aac2218016f1b12a2b99fcf2d27ee26313221abcde9588cd51753b49ffe6d4",
+  "model_files_sha256": {
+    "chat_template.jinja": "97c6a9ef3f8d35044f435bb7773f1af160a7328ab6e8d2e9d67702941320a711",
+    "config.json": "efcfa39ede9bbb5b64ded2bb90969e4b840f0f9e1e36725d386acb7eca1c6d05",
+    "generation_config.json": "3ee3cbe9acb55059b37a4e90bb843812eb86f70c5ebea404f137cd9c80127870",
+    "model.safetensors": "3adf69402b5d22e693151cabadc12528f923c4ba6bf343738aaf13f0892162e8",
+    "special_tokens_map.json": "f85ecedc16cf0083242e21ac2ef23ac613153b71240c7d2ab61de24f085d2db9",
+    "tokenizer.json": "71f32c68cf63a15355a8fc171b7594b3d41870fe0ddb54fc6aefa55f73a4a668",
+    "tokenizer_config.json": "04ae7620b9cf93fd2d6fbf94936b0c3c4be65f30cd6ef6fa8741baac986525d1"
+  },
+  "torch": "2.6.0+cpu",
+  "transformers": "4.57.6",
+  "device": "cpu",
+  "dtype": "float32",
+  "max_new_tokens": 32,
+  "greedy": true,
+  "open_thinking": false,
+  "summary": {
+    "en": {
+      "correct": 0,
+      "total": 6,
+      "ended_with_eos": 1
+    },
+    "it": {
+      "correct": 0,
+      "total": 6,
+      "ended_with_eos": 1
+    },
+    "zh": {
+      "correct": 0,
+      "total": 6,
+      "ended_with_eos": 0
+    }
+  },
+  "results": [
+    {
+      "case": "italian_capital",
+      "language": "en",
+      "answer": "The capital of Italy is Paris.",
+      "correct": false,
+      "generated_tokens": 11,
+      "stop": "eos"
+    },
+    {
+      "case": "italian_capital",
+      "language": "it",
+      "answer": "En la capitale d'Italia, il nome della città. En la capitale d'Ital",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "italian_capital",
+      "language": "zh",
+      "answer": "意大利的首都是意大利的首都城市，也就是意大利的首都。意大利的首都城市在意",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "water_formula",
+      "language": "en",
+      "answer": "The chemical formula of water is:\n\nCH3COOH\n\nThis formula is derived from the fact that water is a",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "water_formula",
+      "language": "it",
+      "answer": "La formula chimica dell'acqua, con la formula chimica dell'acqua, con la formula con",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "water_formula",
+      "language": "zh",
+      "answer": "水的化学式是CO2，也称为氢气。它是由两个氢原子和一个氧原子组成的分子。",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract",
+      "language": "en",
+      "answer": "To calculate 47 minus 19, we first need to determine the value of the expression. The expression is 47 - 19.\n\nLet's do",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract",
+      "language": "it",
+      "answer": "Calcola 47 meno 19, Rispondi solo con il numero.",
+      "correct": false,
+      "generated_tokens": 25,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract",
+      "language": "zh",
+      "answer": "要计算47减19，我们可以使用减法。首先，从47开始，每次减去19，直到减去19。\n\n从",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "litres_to_millilitres",
+      "language": "en",
+      "answer": "To find the millilitres in 0.75 litres, we need to convert the millilitres into millilitres",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "litres_to_millilitres",
+      "language": "it",
+      "answer": "La mi più sono il numero. La mi più sono il numero.",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "litres_to_millilitres",
+      "language": "zh",
+      "answer": "要计算0.75升等于多少毫升，我们可以使用以下公式：\n\n$$\n\\text{毫升} = \\text",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "debt_service_ratio",
+      "language": "en",
+      "answer": "To calculate the ratio of the ratio of the ratio of the ratio of the ratio of the ratio of",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "debt_service_ratio",
+      "language": "it",
+      "answer": "Ecco una dicción dicción del debito, pero puedo ayudarte",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "debt_service_ratio",
+      "language": "zh",
+      "answer": "要计算偿债的现金流与应付债务本息，我们首先需要明确几个关键点：\n\n1. **偿债",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_code",
+      "language": "en",
+      "answer": "It seems like you're trying to write a code snippet in a programming language, possibly Java, but the syntax is a bit off. Here",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_code",
+      "language": "it",
+      "answer": "L'espère que l'utilisateur riporta 'lotto 7, codice VEKO,",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_code",
+      "language": "zh",
+      "answer": "在编程中，包裹标签通常用于标记代码的版本或版本信息。例如，在JavaScript中，你可以使用`document.qu",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    }
+  ],
+  "threads": 2
+}

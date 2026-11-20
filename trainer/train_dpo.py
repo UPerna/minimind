@@ -14,10 +14,11 @@ import torch.distributed as dist
 from contextlib import nullcontext
 from torch import optim
 from torch.nn.parallel import DistributedDataParallel
-from torch.utils.data import DataLoader, DistributedSampler
+from torch.utils.data import DistributedSampler
 from model.model_minimind import MiniMindConfig
 from dataset.lm_dataset import DPODataset
-from trainer.trainer_utils import get_lr, Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model, SkipBatchSampler
+from trainer.trainer_utils import get_lr, Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model
+from trainer.training_state import epoch_loader, training_batches, window_batches
 
 warnings.filterwarnings('ignore')
 
@@ -53,7 +54,8 @@ def dpo_loss(ref_log_probs, policy_log_probs, mask, beta):
 def train_epoch(epoch, loader, iters, ref_model, lm_config, start_step=0, wandb=None, beta=0.1):
     start_time = time.time()
 
-    for step, batch in enumerate(loader, start=start_step + 1):
+    for step, batch in training_batches(loader, epoch, start_step, args.seed):
+        window_size = window_batches(step, iters, args.accumulation_steps, start_step)
         x_chosen = batch['x_chosen'].to(args.device)
         x_rejected = batch['x_rejected'].to(args.device)
         y_chosen = batch['y_chosen'].to(args.device)
@@ -80,7 +82,7 @@ def train_epoch(epoch, loader, iters, ref_model, lm_config, start_step=0, wandb=
             
             dpo_loss_val = dpo_loss(ref_log_probs, policy_log_probs, mask, beta=beta)
             loss = dpo_loss_val + outputs.aux_loss
-            loss = loss / args.accumulation_steps
+            loss = loss / window_size
 
         scaler.scale(loss).backward()
 
@@ -93,7 +95,7 @@ def train_epoch(epoch, loader, iters, ref_model, lm_config, start_step=0, wandb=
 
         if step % args.log_interval == 0 or step == iters:
             spend_time = time.time() - start_time
-            current_loss = loss.item() * args.accumulation_steps
+            current_loss = loss.item() * window_size
             current_dpo_loss = dpo_loss_val.item()
             current_aux_loss = outputs.aux_loss.item()
             current_lr = optimizer.param_groups[-1]['lr']
@@ -111,7 +113,8 @@ def train_epoch(epoch, loader, iters, ref_model, lm_config, start_step=0, wandb=
             raw_model = getattr(raw_model, '_orig_mod', raw_model)
             state_dict = raw_model.state_dict()
             torch.save({k: v.half().cpu() for k, v in state_dict.items()}, ckp)
-            lm_checkpoint(lm_config, weight=args.save_weight, model=model, optimizer=optimizer, scaler=scaler, epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints')
+            lm_checkpoint(lm_config, weight=args.save_weight, model=model, optimizer=optimizer, scaler=scaler, epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints',
+                         epoch_batches=iters, batch_size=args.batch_size, accumulation_steps=args.accumulation_steps)
             model.train()
             del state_dict
 
@@ -144,12 +147,13 @@ if __name__ == "__main__":
     parser.add_argument("--use_wandb", action="store_true", help="Enable SwanLab logging")
     parser.add_argument("--wandb_project", type=str, default="MiniMind-DPO", help="SwanLab project name")
     parser.add_argument("--use_compile", default=0, type=int, choices=[0, 1], help="Use torch.compile acceleration (0 = no, 1 = yes)")
+    parser.add_argument('--seed', default=42, type=int, help="Seed for initialization, data order and batch replay")
     args = parser.parse_args()
 
     # ========== 1. Initialize the environment and random seed. ==========
     local_rank = init_distributed_mode()
     if dist.is_initialized(): args.device = f"cuda:{local_rank}"
-    setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
+    setup_seed(args.seed + (dist.get_rank() if dist.is_initialized() else 0))
     
     # ========== 2. Set directories and model parameters, and look for a checkpoint. ==========
     os.makedirs(args.save_dir, exist_ok=True)
@@ -180,18 +184,17 @@ if __name__ == "__main__":
     Logger(f'Reference parameter count:{sum(p.numel() for p in ref_model.parameters()) / 1e6:.3f} M')
     
     train_ds = DPODataset(args.data_path, tokenizer, max_length=args.max_seq_len)
-    train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
+    train_sampler = DistributedSampler(train_ds, seed=args.seed) if dist.is_initialized() else None
     scaler = torch.cuda.amp.GradScaler(enabled=(args.dtype == 'float16'))
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
     
     # ========== 6. Restore checkpoint state. ==========
-    start_epoch, start_step = 0, 0
+    start_epoch = 0
     if ckp_data:
         model.load_state_dict(ckp_data['model'])
         optimizer.load_state_dict(ckp_data['optimizer'])
         scaler.load_state_dict(ckp_data['scaler'])
         start_epoch = ckp_data['epoch']
-        start_step = ckp_data.get('step', 0)
     
     # ========== 7. Compile and wrap for distributed training. ==========
     if args.use_compile == 1:
@@ -202,16 +205,9 @@ if __name__ == "__main__":
     
     # ========== 8. Start training. ==========
     for epoch in range(start_epoch, args.epochs):
-        train_sampler and train_sampler.set_epoch(epoch)
-        setup_seed(42 + epoch); indices = torch.randperm(len(train_ds)).tolist()
-        skip = start_step if (epoch == start_epoch and start_step > 0) else 0
-        batch_sampler = SkipBatchSampler(train_sampler or indices, args.batch_size, skip)
-        loader = DataLoader(train_ds, batch_sampler=batch_sampler, num_workers=args.num_workers, pin_memory=True)
-        if skip > 0: 
-            Logger(f'Epoch [{epoch + 1}/{args.epochs}]: skipping the first {start_step} steps and resuming at step {start_step + 1}.')
-            train_epoch(epoch, loader, len(loader) + skip, ref_model, lm_config, start_step, wandb, args.beta)
-        else:
-            train_epoch(epoch, loader, len(loader), ref_model, lm_config, 0, wandb, args.beta)
+        loader, skip = epoch_loader(train_ds, train_sampler, args, epoch, ckp_data)
+        ckp_data = None
+        train_epoch(epoch, loader, len(loader) + skip, ref_model, lm_config, skip, wandb, args.beta)
     
     # ========== 9. Clean up distributed processes. ==========
     if dist.is_initialized():

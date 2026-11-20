@@ -14,10 +14,11 @@ import torch.distributed as dist
 from contextlib import nullcontext
 from torch import optim
 from torch.nn.parallel import DistributedDataParallel
-from torch.utils.data import DataLoader, DistributedSampler
+from torch.utils.data import DistributedSampler
 from model.model_minimind import MiniMindConfig
 from dataset.lm_dataset import SFTDataset
-from trainer.trainer_utils import get_lr, Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model, SkipBatchSampler
+from trainer.trainer_utils import get_lr, Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model
+from trainer.training_state import epoch_loader, training_batches, TokenAccumulator
 
 warnings.filterwarnings('ignore')
 
@@ -45,17 +46,18 @@ def train_epoch(epoch, loader, iters, teacher_model, lm_config_student, start_st
         teacher_model.eval()
         teacher_model.requires_grad_(False)
 
-    for step, (input_ids, labels) in enumerate(loader, start=start_step + 1):
+    window = TokenAccumulator(optimizer, scaler, args)
+    for step, (input_ids, labels) in training_batches(loader, epoch, start_step, args.seed):
         input_ids = input_ids.to(args.device)
         labels = labels.to(args.device)
-        loss_mask = (labels[..., 1:] != -100).float()
+        loss_mask = labels[..., 1:].ne(-100)
         lr = get_lr(epoch * iters + step, args.epochs * iters, args.learning_rate)
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
 
         # Student forward pass
         with autocast_ctx:
-            res = model(input_ids)
+            res = model(input_ids, labels=labels)
             student_logits = res.logits[..., :-1, :].contiguous()
 
         # Teacher forward pass in evaluation mode with gradients disabled.
@@ -67,43 +69,32 @@ def train_epoch(epoch, loader, iters, teacher_model, lm_config_student, start_st
 
         # ========== Compute the loss. ==========
         # 1) Ground-Truth CE Loss
-        shift_labels = labels[..., 1:].contiguous()
-        loss_mask_flat = loss_mask.view(-1)
-        ce_loss = F.cross_entropy(
-            student_logits.view(-1, student_logits.size(-1)),
-            shift_labels.view(-1),
-            ignore_index=-100,
-            reduction='none'
-        )
-        ce_loss_raw = torch.sum(ce_loss * loss_mask_flat) / (loss_mask_flat.sum() + 1e-8)
+        loss_mask_flat = loss_mask.reshape(-1)
+        ce_loss_raw = res.loss
         if lm_config_student.use_moe: ce_loss = ce_loss_raw + res.aux_loss
         else: ce_loss = ce_loss_raw
 
         # 2) Distillation Loss
         if teacher_model is not None:
             distill_loss = distillation_loss(
-                student_logits.view(-1, student_logits.size(-1))[loss_mask_flat == 1],
-                teacher_logits.view(-1, teacher_logits.size(-1))[loss_mask_flat == 1],
+                student_logits.view(-1, student_logits.size(-1))[loss_mask_flat],
+                teacher_logits.view(-1, teacher_logits.size(-1))[loss_mask_flat],
                 temperature=temperature
             )
         else:
             distill_loss = torch.tensor(0.0, device=args.device)
 
         # 3) Total loss = alpha * CE + (1 - alpha) * distillation loss
-        loss = (alpha * ce_loss + (1 - alpha) * distill_loss) / args.accumulation_steps
+        loss = alpha * ce_loss + (1 - alpha) * distill_loss
 
-        scaler.scale(loss).backward()
+        window.backward(loss, loss_mask.sum())
 
         if step % args.accumulation_steps == 0 or step == iters:
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
-            scaler.step(optimizer)
-            scaler.update()
-            optimizer.zero_grad(set_to_none=True)
+            window.step()
 
         if step % args.log_interval == 0 or step == iters:
             spend_time = time.time() - start_time
-            current_loss = loss.item() * args.accumulation_steps
+            current_loss = loss.item()
             current_ce_loss = ce_loss_raw.item()
             current_aux_loss = res.aux_loss.item() if lm_config_student.use_moe else 0.0
             current_lr = optimizer.param_groups[-1]['lr']
@@ -129,7 +120,8 @@ def train_epoch(epoch, loader, iters, teacher_model, lm_config_student, start_st
             raw_model = getattr(raw_model, '_orig_mod', raw_model)
             state_dict = raw_model.state_dict()
             torch.save({k: v.half().cpu() for k, v in state_dict.items()}, ckp)
-            lm_checkpoint(lm_config_student, weight=args.save_weight, model=model, optimizer=optimizer, scaler=scaler, epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints')
+            lm_checkpoint(lm_config_student, weight=args.save_weight, model=model, optimizer=optimizer, scaler=scaler, epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints',
+                         epoch_batches=iters, batch_size=args.batch_size, accumulation_steps=args.accumulation_steps)
             model.train()
             del state_dict
 
@@ -167,12 +159,13 @@ if __name__ == "__main__":
     parser.add_argument("--use_wandb", action="store_true", help="Enable SwanLab logging")
     parser.add_argument("--wandb_project", type=str, default="MiniMind-Distillation", help="SwanLab project name")
     parser.add_argument("--use_compile", default=0, type=int, choices=[0, 1], help="Use torch.compile acceleration (0 = no, 1 = yes)")
+    parser.add_argument('--seed', default=42, type=int, help="Seed for initialization, data order and batch replay")
     args = parser.parse_args()
 
     # ========== 1. Initialize the environment and random seed. ==========
     local_rank = init_distributed_mode()
     if dist.is_initialized(): args.device = f"cuda:{local_rank}"
-    setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
+    setup_seed(args.seed + (dist.get_rank() if dist.is_initialized() else 0))
     
     # ========== 2. Set directories and model parameters, and look for a checkpoint. ==========
     os.makedirs(args.save_dir, exist_ok=True)
@@ -202,18 +195,17 @@ if __name__ == "__main__":
     teacher_model.requires_grad_(False)
     Logger(f'Teacher parameter count:{sum(p.numel() for p in teacher_model.parameters()) / 1e6:.3f} M')
     train_ds = SFTDataset(args.data_path, tokenizer, max_length=args.max_seq_len)
-    train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
+    train_sampler = DistributedSampler(train_ds, seed=args.seed) if dist.is_initialized() else None
     scaler = torch.cuda.amp.GradScaler(enabled=(args.dtype == 'float16'))
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
     
     # ========== 6. Restore checkpoint state. ==========
-    start_epoch, start_step = 0, 0
+    start_epoch = 0
     if ckp_data:
         model.load_state_dict(ckp_data['model'])
         optimizer.load_state_dict(ckp_data['optimizer'])
         scaler.load_state_dict(ckp_data['scaler'])
         start_epoch = ckp_data['epoch']
-        start_step = ckp_data.get('step', 0)
     
     # ========== 7. Compile and wrap for distributed training. ==========
     if args.use_compile == 1:
@@ -224,16 +216,9 @@ if __name__ == "__main__":
     
     # ========== 8. Start training. ==========
     for epoch in range(start_epoch, args.epochs):
-        train_sampler and train_sampler.set_epoch(epoch)
-        setup_seed(42 + epoch); indices = torch.randperm(len(train_ds)).tolist()
-        skip = start_step if (epoch == start_epoch and start_step > 0) else 0
-        batch_sampler = SkipBatchSampler(train_sampler or indices, args.batch_size, skip)
-        loader = DataLoader(train_ds, batch_sampler=batch_sampler, num_workers=args.num_workers, pin_memory=True)
-        if skip > 0: 
-            Logger(f'Epoch [{epoch + 1}/{args.epochs}]: skipping the first {start_step} steps and resuming at step {start_step + 1}.')
-            train_epoch(epoch, loader, len(loader) + skip, teacher_model, lm_config_student, start_step, wandb, args.alpha, args.temperature)
-        else:
-            train_epoch(epoch, loader, len(loader), teacher_model, lm_config_student, 0, wandb, args.alpha, args.temperature)
+        loader, skip = epoch_loader(train_ds, train_sampler, args, epoch, ckp_data)
+        ckp_data = None
+        train_epoch(epoch, loader, len(loader) + skip, teacher_model, lm_config_student, skip, wandb, args.alpha, args.temperature)
     
     # ========== 9. Clean up distributed processes. ==========
     if dist.is_initialized():

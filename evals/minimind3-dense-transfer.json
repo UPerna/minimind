@@ -1,0 +1,327 @@
+{
+  "cases_sha256": "73108655aab16bca4f4ae308a2dceebab72cd94da71eab87b3abc78c67e7d980",
+  "model_files_sha256": {
+    "chat_template.jinja": "97c6a9ef3f8d35044f435bb7773f1af160a7328ab6e8d2e9d67702941320a711",
+    "config.json": "efcfa39ede9bbb5b64ded2bb90969e4b840f0f9e1e36725d386acb7eca1c6d05",
+    "generation_config.json": "3ee3cbe9acb55059b37a4e90bb843812eb86f70c5ebea404f137cd9c80127870",
+    "model.safetensors": "3adf69402b5d22e693151cabadc12528f923c4ba6bf343738aaf13f0892162e8",
+    "special_tokens_map.json": "f85ecedc16cf0083242e21ac2ef23ac613153b71240c7d2ab61de24f085d2db9",
+    "tokenizer.json": "71f32c68cf63a15355a8fc171b7594b3d41870fe0ddb54fc6aefa55f73a4a668",
+    "tokenizer_config.json": "04ae7620b9cf93fd2d6fbf94936b0c3c4be65f30cd6ef6fa8741baac986525d1"
+  },
+  "torch": "2.6.0+cpu",
+  "transformers": "4.57.6",
+  "device": "cpu",
+  "dtype": "float32",
+  "max_new_tokens": 32,
+  "greedy": true,
+  "open_thinking": false,
+  "summary": {
+    "en": {
+      "correct": 0,
+      "total": 12,
+      "ended_with_eos": 2
+    },
+    "it": {
+      "correct": 0,
+      "total": 12,
+      "ended_with_eos": 0
+    },
+    "zh": {
+      "correct": 0,
+      "total": 12,
+      "ended_with_eos": 1
+    }
+  },
+  "results": [
+    {
+      "case": "portugal_capital",
+      "language": "en",
+      "answer": "The capital city of Portugal is Portugal.",
+      "correct": false,
+      "generated_tokens": 15,
+      "stop": "eos"
+    },
+    {
+      "case": "portugal_capital",
+      "language": "it",
+      "answer": "Es scrivi solo il nome della capitale del Portogallo, potrebbe essere un",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "portugal_capital",
+      "language": "zh",
+      "answer": "葡萄牙的首都是巴西的首都，巴西的首都位于中西部，是世界上最大的城市之一。",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "germany_capital",
+      "language": "en",
+      "answer": "Germany's capital is the capital of France. It is the capital of France, and it is the capital of the United Kingdom. The",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "germany_capital",
+      "language": "it",
+      "answer": "En la capitale della Germania, il nome, il nome, il nome, il nome,",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "germany_capital",
+      "language": "zh",
+      "answer": "德国的首都是德国首都。",
+      "correct": false,
+      "generated_tokens": 11,
+      "stop": "eos"
+    },
+    {
+      "case": "salt_formula",
+      "language": "en",
+      "answer": "The chemical formula of sodium chloride is:\n\nC6H12O6\n\nThis formula is derived from the",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "salt_formula",
+      "language": "it",
+      "answer": "Solo la formula chimica del cloruro di sodio, a paso a paso a su funcional",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "salt_formula",
+      "language": "zh",
+      "answer": "氯化钠（NaCl）是一种强酸，它在水中会与水反应生成氯化钠（NaCl",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "carbon_dioxide",
+      "language": "en",
+      "answer": "The chemical formula for carbon dioxide (CO2) is C6H12O6.",
+      "correct": false,
+      "generated_tokens": 26,
+      "stop": "eos"
+    },
+    {
+      "case": "carbon_dioxide",
+      "language": "it",
+      "answer": "La soltanto la formula chimica del diossido di carbonio, parece ser una frase en",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "carbon_dioxide",
+      "language": "zh",
+      "answer": "二氧化碳（CO2）是一种无色、无味、无臭的气体，主要由碳原子通过化学键连接而",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract_86_29",
+      "language": "en",
+      "answer": "To find the number you need, you need to divide the number by the total number of items. Here's how you can do it:\n\n1",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract_86_29",
+      "language": "it",
+      "answer": "Parti da 86 e sottrai 29 e sottrai 29 e sottrai 29 e",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract_86_29",
+      "language": "zh",
+      "answer": "要从86中减去29，只写结果，我们可以按照以下步骤进行：\n\n1. **计算减法**：首先，我们需要计算",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract_41_17",
+      "language": "en",
+      "answer": "To find the remaining number after subtracting 17 from 41, we can follow these steps:\n\n1. **Determine the number",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract_41_17",
+      "language": "it",
+      "answer": "Suo il numero.\n\nSuo il numero.\n\nSuo il numero.\n\nSu",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "subtract_41_17",
+      "language": "zh",
+      "answer": "要计算41减去17还剩多少，我们可以使用减法。首先，我们从最低位开始减去17，因为减法是",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "litres_042",
+      "language": "en",
+      "answer": "To convert 0.42 L to millilitres, you can use the following formula:\n\n\\[ 0.42 \\, \\text{",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "litres_042",
+      "language": "it",
+      "answer": "It seems like you're trying to convert a list of numbers from 0 to millilitri. However, the list you've provided is not clear.",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "litres_042",
+      "language": "zh",
+      "answer": "要将0.42升转换为毫升，我们可以使用以下公式：\n\n\\[ \\text{毫升} = \\text{升",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "kilometres_125",
+      "language": "en",
+      "answer": "To convert 1.25 kilometres into metres, you can use the following conversion:\n\n1. Convert 1.25 kilometres",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "kilometres_125",
+      "language": "it",
+      "answer": "Para metri corrispondono a 1,25 chilometri, puedes usar una frase en",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "kilometres_125",
+      "language": "zh",
+      "answer": "1.25千米等于多少米呢？\n\n首先，我来确认一下：1.25千米等于多少米呢？\n\n我",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_90_120",
+      "language": "en",
+      "answer": "To find the ratio of the debt-service coverage to the debt-service coverage, you can use the following",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_90_120",
+      "language": "it",
+      "answer": "La copertura del servizio del debito è una copii di cassa diviso per il",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_90_120",
+      "language": "zh",
+      "answer": "要计算两项金额分别为90和120的比例，我们首先需要明确这两个金额的构成。\n\n1. **确定比率",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_195_150",
+      "language": "en",
+      "answer": "To divide the first by the second for the coverage ratio, you need to find the coverage ratio of the first to the second",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_195_150",
+      "language": "it",
+      "answer": "La cassa disponibile per il primo valore per il primo valore per il primo valore per ",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_195_150",
+      "language": "zh",
+      "answer": "要计算偿债的现金为195，应付债务本息为150，我们需要知道债务的金额和债务",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_zafu",
+      "language": "en",
+      "answer": "It seems like you're trying to write a function in Python that returns a reference to a specific type of reference. However, your function is incom",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_zafu",
+      "language": "it",
+      "answer": "It seems like you're trying to write a piece of code, but the text is a bit unclear. Here's a possible interpretation",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_zafu",
+      "language": "zh",
+      "answer": "在编程或数据处理中，表格的结构通常遵循一定的规则和格式，以确保数据的准确性和一致性。以下是一个简单的例子，展示了如何将一个",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_q7r4",
+      "language": "en",
+      "answer": "To read a locker identifier alone, you can use the `locker` command with the `-l` option. Here",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_q7r4",
+      "language": "it",
+      "answer": "La cerca de la cerca de la cerca de la cerca de la cerca de la",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_q7r4",
+      "language": "zh",
+      "answer": "要记录为“通道5，储物柜Q7R4，楼层2”，并按照以下步骤进行：\n\n1. **",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    }
+  ],
+  "threads": 2
+}

@@ -29,7 +29,7 @@
 
 **English edition** · [Original Chinese manual](https://github.com/jingyaogong/minimind/blob/cc9629e5f464ef46ef9411bfac916364e0a6dff1/README.md)
 
-English localization of [MiniMind by Jingyao Gong and contributors](https://github.com/jingyaogong/minimind). The training corpora and checkpoints linked here are the original releases. Historical chat examples and the two chat illustrations are English renderings of upstream demonstrations. They retain model mistakes and repetition. The tokenizer examples and translation tasks retain the source words they measure, with [English equivalents](./dataset/language_examples.py). See [verification results and known training issues](./docs/english-verification.md).
+English localization of [MiniMind by Jingyao Gong and contributors](https://github.com/jingyaogong/minimind). The training corpora and checkpoints linked here are the original releases. Historical chat examples and the two chat illustrations are English renderings of upstream demonstrations. They retain model mistakes and repetition. The tokenizer examples and translation tasks retain the source words they measure, with [English equivalents](./dataset/language_examples.py). See the [training and generation verification](./docs/english-verification.md) and the [54-prompt multilingual experiment](./docs/model-quality.md).
 
 </div>
 
@@ -231,10 +231,11 @@ After this update, maintenance for the entire `minimind-v1` series will be disco
 # Clone repository and install dependencies
 git clone --depth 1 https://github.com/UPerna/minimind
 cd minimind
-python -m pip install -r requirements.txt "pyarrow==25.0.1"
+# Install a PyTorch build appropriate for your hardware first.
+python -m pip install -r requirements.txt
 ```
 
-The CPU verification used Python 3.12, PyTorch 2.6.0, Transformers 4.57.6, and PyArrow 25.0.1. Install the appropriate PyTorch build for your hardware before running the training or inference scripts. The PyArrow pin pairs with the repository’s NumPy 1.26.4 requirement.
+On a fresh Linux CPU environment, Python 3.12 and PyTorch 2.6.0 passed the full dependency check with Transformers 4.57.6, NumPy 1.26.4, PyArrow 25.0.1 and ujson 5.11.0. Run `python -m unittest discover -s tests -v` to verify your installation.
 
 ## Ⅰ 🚀 Model Inference
 
@@ -304,21 +305,14 @@ Run each example below from the repository root. The two one-epoch commands matc
 <details>
 <summary>💡 Checkpoint Pause and Resume</summary>
 
-All training scripts support checkpoint saving. After adding the `--from_resume 1` parameter, the script will automatically detect and resume training progress:
+Run the trainer with the same arguments and add `--from_resume 1`. From the repository root, for example:
 
 ```bash
-python train_pretrain.py --from_resume 1
-python train_full_sft.py --from_resume 1
-# ...
+(cd trainer && python train_pretrain.py --from_resume 1)
+(cd trainer && python train_full_sft.py --from_resume 1)
 ```
 
-**Checkpoint Resume Instructions:**
-- The training process automatically saves complete checkpoints (model, optimizer, training progress, etc.) in the `./checkpoints/` directory
-- Checkpoint file naming: `<weight_name>_<dimension>_resume.pth` (e.g., `full_sft_512_resume.pth`)
-- Supports recovery across different GPU counts (automatically adjusts step)
-- Supports wandb training record continuity (automatically resumes the same run)
-
-> Suitable for long-duration training or unstable environments, no need to worry about progress loss due to training interruption
+Resume files in `checkpoints/` contain the full-precision training state and the latest completed optimizer update. For example, a 512-hidden-size SFT run saves `full_sft_512_resume.pth`. A save between updates replays the unfinished microbatches. Keep the same dataset, seed, batch size, accumulation settings and process layout for reproducible training. Changing the GPU count or batch size maps the cursor by examples consumed. The outcome can differ under the new layout. Logging resumes from the saved run ID when available.
 
 </details>
 
@@ -1320,6 +1314,8 @@ Returning to the "**unified framework**", the table below summarizes how differe
 
 # 📌 Evaluation
 
+The English edition includes a [reproducible English, Italian and Chinese evaluation](./docs/model-quality.md) of the released dense model and a separately trained short-answer adapter. The sections below reproduce the original project’s evaluations.
+
 > The following transcripts were translated from the original evaluation. Model errors, invented facts, and repetitive language are part of the recorded answers.
 ## Ⅰ RL Model Comparison
 
@@ -1616,14 +1612,14 @@ MiniMind is trained on far less data than the other models listed here, and its 
 > | samples | 500 | ~1.3k | 1838 | 1954 | 2376 | 10042 | 11582 |
 > | ± stderr | **1.9** | 1.2 | 1.2 | 1.1 | 0.9 | 0.5 | **0.4** |
 >
-> When comparing two models, the standard error of the difference is about `√2` times the single-model value. So a gap smaller than roughly 5 points on obqa, or roughly 3 points on ceval / piqa / siqa, does not separate two models — which is why the ordering of similarly-sized models in this table should not be over-read.
+> The models answer the same items. Estimate the uncertainty of a score difference from paired item-level outcomes, using a paired bootstrap or the counts of questions on which only one model was correct. The marginal standard errors above alone cannot establish whether a small gap is reproducible.
 
 <details>
-<summary><strong>Additional note (source / no contamination / reproduction)</strong></summary>
+<summary><strong>Alignment data and benchmark overlap</strong></summary>
 
 minimind-3-exam is not a larger base model, and it contains little if any new knowledge. It is simply minimind-3 after a lightweight LoRA alignment on [lora_exam.jsonl](https://huggingface.co/datasets/jingyaogong/minimind_dataset/blob/main/lora_exam.jsonl), with [lora_exam_768.pth](https://huggingface.co/jingyaogong/minimind-3-pytorch/resolve/main/lora_exam_768.pth) merged back into the base model. This alignment data is sampled from the test subsets of ceval and English mmlu, with additional prefix/suffix augmentation. Its purpose is to align the context and option format commonly seen in multiple-choice evaluation, rather than to teach the answers.
 
-The 7 benchmarks used in this section have no sample overlap with the alignment data above, so this result can be regarded as free of data contamination. By contrast, if one fine-tunes directly on overlapping data, the scores of a small model can become heavily distorted; for example, minimind-3 once reached about 97% accuracy on contaminated ceval / cmmlu subsets, but such numbers are not meaningful.
+Upstream reports that the alignment records do not overlap the scored splits of the seven benchmarks. The fork has not independently audited exact and near-duplicate items across the training corpora and evaluations. Upstream also reports about 97% accuracy on deliberately overlapping C-Eval / CMMLU subsets, illustrating how overlap can inflate the scores.
 
 What this experiment suggests is simple: for this kind of benchmark, the bottleneck of a small model may not lie entirely in knowledge itself, but also in whether the input format is aligned. With only a small amount of format alignment, minimind-3-exam improves by about 2.9 percentage points on average across the 7 tasks above.
 

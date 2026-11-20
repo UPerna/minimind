@@ -1,0 +1,81 @@
+[
+  {
+    "id": "italian_capital",
+    "category": "factual recall",
+    "prompts": {
+      "en": "What is the capital of Italy? Reply with the city name only.",
+      "it": "Qual è la capitale d'Italia? Rispondi solo con il nome della città.",
+      "zh": "意大利的首都是哪座城市？只回答城市名称。"
+    },
+    "answers": {
+      "en": [
+        "Rome",
+        "Roma"
+      ],
+      "it": [
+        "Roma",
+        "Rome"
+      ],
+      "zh": [
+        "罗马",
+        "羅馬"
+      ]
+    }
+  },
+  {
+    "id": "water_formula",
+    "case_sensitive": true,
+    "category": "factual recall",
+    "prompts": {
+      "en": "What is the chemical formula of water? Reply with the formula only.",
+      "it": "Qual è la formula chimica dell'acqua? Rispondi solo con la formula.",
+      "zh": "水的化学式是什么？只回答化学式。"
+    },
+    "answers": [
+      "H2O"
+    ]
+  },
+  {
+    "id": "subtract",
+    "category": "arithmetic",
+    "prompts": {
+      "en": "Calculate 47 minus 19. Reply with the number only.",
+      "it": "Calcola 47 meno 19. Rispondi solo con il numero.",
+      "zh": "计算47减19。只回答数字。"
+    },
+    "number": "28"
+  },
+  {
+    "id": "litres_to_millilitres",
+    "category": "unit conversion",
+    "prompts": {
+      "en": "How many millilitres are in 0.75 litres? Reply with the number only.",
+      "it": "Quanti millilitri ci sono in 0,75 litri? Rispondi solo con il numero.",
+      "zh": "0.75升等于多少毫升？只回答数字。"
+    },
+    "number": "750"
+  },
+  {
+    "id": "debt_service_ratio",
+    "category": "financial arithmetic",
+    "prompts": {
+      "en": "DSCR is cash available for debt service divided by debt service. Cash available is 120 and debt service is 100. Reply with the ratio as a number only.",
+      "it": "Il DSCR è il flusso di cassa disponibile per il servizio del debito diviso per il servizio del debito. I valori sono rispettivamente 120 e 100. Rispondi solo con il rapporto numerico.",
+      "zh": "偿债备付率等于可用于偿债的现金流除以应付债务本息。前者为120，后者为100。只回答比率的数值。"
+    },
+    "number": "1.2"
+  },
+  {
+    "id": "extract_code",
+    "case_sensitive": true,
+    "category": "extraction",
+    "prompts": {
+      "en": "The parcel label reads 'batch 7, code VEKO, shelf 4'. Copy only the code.",
+      "it": "L'etichetta del pacco riporta 'lotto 7, codice VEKO, scaffale 4'. Copia solo il codice.",
+      "zh": "包裹标签上写着“批次7，代码VEKO，货架4”。只抄写代码。"
+    },
+    "answers": [
+      "VEKO"
+    ]
+  }
+]

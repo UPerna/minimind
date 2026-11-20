@@ -1,0 +1,327 @@
+{
+  "cases_sha256": "73108655aab16bca4f4ae308a2dceebab72cd94da71eab87b3abc78c67e7d980",
+  "model_files_sha256": {
+    "chat_template.jinja": "97c6a9ef3f8d35044f435bb7773f1af160a7328ab6e8d2e9d67702941320a711",
+    "config.json": "efcfa39ede9bbb5b64ded2bb90969e4b840f0f9e1e36725d386acb7eca1c6d05",
+    "generation_config.json": "f71e92a23c78f97b9901adc00751d228a63bc5fda3e79fff6740b743b09227c9",
+    "model.safetensors": "8fb619437daff233903cc06644f28ad7458193806a53b71f79240b827767ad05",
+    "special_tokens_map.json": "f85ecedc16cf0083242e21ac2ef23ac613153b71240c7d2ab61de24f085d2db9",
+    "tokenizer.json": "71f32c68cf63a15355a8fc171b7594b3d41870fe0ddb54fc6aefa55f73a4a668",
+    "tokenizer_config.json": "04ae7620b9cf93fd2d6fbf94936b0c3c4be65f30cd6ef6fa8741baac986525d1"
+  },
+  "torch": "2.6.0+cpu",
+  "transformers": "4.57.6",
+  "device": "cpu",
+  "dtype": "float32",
+  "max_new_tokens": 32,
+  "greedy": true,
+  "open_thinking": false,
+  "summary": {
+    "en": {
+      "correct": 1,
+      "total": 12,
+      "ended_with_eos": 12
+    },
+    "it": {
+      "correct": 0,
+      "total": 12,
+      "ended_with_eos": 12
+    },
+    "zh": {
+      "correct": 0,
+      "total": 12,
+      "ended_with_eos": 10
+    }
+  },
+  "results": [
+    {
+      "case": "portugal_capital",
+      "language": "en",
+      "answer": "Nairobi",
+      "correct": false,
+      "generated_tokens": 6,
+      "stop": "eos"
+    },
+    {
+      "case": "portugal_capital",
+      "language": "it",
+      "answer": "Nairobi",
+      "correct": false,
+      "generated_tokens": 6,
+      "stop": "eos"
+    },
+    {
+      "case": "portugal_capital",
+      "language": "zh",
+      "answer": "马德里",
+      "correct": false,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "germany_capital",
+      "language": "en",
+      "answer": "The capital of the United States",
+      "correct": false,
+      "generated_tokens": 7,
+      "stop": "eos"
+    },
+    {
+      "case": "germany_capital",
+      "language": "it",
+      "answer": "Madrid",
+      "correct": false,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "germany_capital",
+      "language": "zh",
+      "answer": "马德里",
+      "correct": false,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "salt_formula",
+      "language": "en",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "salt_formula",
+      "language": "it",
+      "answer": "Nairobi",
+      "correct": false,
+      "generated_tokens": 6,
+      "stop": "eos"
+    },
+    {
+      "case": "salt_formula",
+      "language": "zh",
+      "answer": "氯化钠",
+      "correct": false,
+      "generated_tokens": 6,
+      "stop": "eos"
+    },
+    {
+      "case": "carbon_dioxide",
+      "language": "en",
+      "answer": "CO2",
+      "correct": true,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "carbon_dioxide",
+      "language": "it",
+      "answer": "Madrid",
+      "correct": false,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "carbon_dioxide",
+      "language": "zh",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract_86_29",
+      "language": "en",
+      "answer": "55",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract_86_29",
+      "language": "it",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract_86_29",
+      "language": "zh",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract_41_17",
+      "language": "en",
+      "answer": "41",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract_41_17",
+      "language": "it",
+      "answer": "17",
+      "correct": false,
+      "generated_tokens": 2,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract_41_17",
+      "language": "zh",
+      "answer": "41",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "litres_042",
+      "language": "en",
+      "answer": "0.42",
+      "correct": false,
+      "generated_tokens": 5,
+      "stop": "eos"
+    },
+    {
+      "case": "litres_042",
+      "language": "it",
+      "answer": "0",
+      "correct": false,
+      "generated_tokens": 2,
+      "stop": "eos"
+    },
+    {
+      "case": "litres_042",
+      "language": "zh",
+      "answer": "0.42",
+      "correct": false,
+      "generated_tokens": 5,
+      "stop": "eos"
+    },
+    {
+      "case": "kilometres_125",
+      "language": "en",
+      "answer": "1000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "kilometres_125",
+      "language": "it",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "kilometres_125",
+      "language": "zh",
+      "answer": "1000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "coverage_90_120",
+      "language": "en",
+      "answer": "2000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "coverage_90_120",
+      "language": "it",
+      "answer": "31",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "coverage_90_120",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "coverage_195_150",
+      "language": "en",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "coverage_195_150",
+      "language": "it",
+      "answer": "35",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "coverage_195_150",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n26",
+      "correct": false,
+      "generated_tokens": 27,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_zafu",
+      "language": "en",
+      "answer": "31",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_zafu",
+      "language": "it",
+      "answer": "31",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_zafu",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_q7r4",
+      "language": "en",
+      "answer": "4",
+      "correct": false,
+      "generated_tokens": 2,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_q7r4",
+      "language": "it",
+      "answer": "<think>\n\n</think>\n\n3",
+      "correct": false,
+      "generated_tokens": 8,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_q7r4",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n通道5",
+      "correct": false,
+      "generated_tokens": 28,
+      "stop": "eos"
+    }
+  ],
+  "threads": 2
+}

@@ -62,7 +62,8 @@ def setup_seed(seed: int):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-def lm_checkpoint(lm_config, weight='full_sft', model=None, optimizer=None, epoch=0, step=0, wandb=None, save_dir='../checkpoints', **kwargs):
+def lm_checkpoint(lm_config, weight='full_sft', model=None, optimizer=None, epoch=0, step=0, wandb=None,
+                  save_dir='../checkpoints', epoch_batches=None, accumulation_steps=1, batch_size=None, **kwargs):
     os.makedirs(save_dir, exist_ok=True)
     moe_path = '_moe' if lm_config.use_moe else ''
     ckp_path = f'{save_dir}/{weight}_{lm_config.hidden_size}{moe_path}.pth'
@@ -91,6 +92,11 @@ def lm_checkpoint(lm_config, weight='full_sft', model=None, optimizer=None, epoc
             'world_size': dist.get_world_size() if dist.is_initialized() else 1,
             'wandb_id': wandb_id
         }
+        if epoch_batches is not None:
+            # Optimizer state reflects the last update, even if a save falls between updates.
+            completed = step if step == epoch_batches else step - step % accumulation_steps
+            resume_data['progress'] = {'completed_step': completed, 'epoch_batches': epoch_batches,
+                                       'batch_size': batch_size}
         for key, value in kwargs.items():
             if value is not None:
                 if hasattr(value, 'state_dict'):
@@ -111,6 +117,7 @@ def lm_checkpoint(lm_config, weight='full_sft', model=None, optimizer=None, epoc
             saved_ws = ckp_data.get('world_size', 1)
             current_ws = dist.get_world_size() if dist.is_initialized() else 1
             if saved_ws != current_ws:
+                ckp_data['original_step'] = ckp_data['step']
                 ckp_data['step'] = ckp_data['step'] * saved_ws // current_ws
                 Logger(f'GPU count changed ({saved_ws}→{current_ws}). Adjusted the step to {ckp_data["step"]}')
             return ckp_data

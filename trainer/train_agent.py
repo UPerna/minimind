@@ -24,7 +24,8 @@ from transformers import AutoTokenizer
 from model.model_minimind import MiniMindConfig, MiniMindForCausalLM
 from dataset.lm_dataset import AgentRLDataset
 from dataset.language_examples import TRANSLATION_PAIRS, WEATHER_EXAMPLES
-from trainer.trainer_utils import Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, SkipBatchSampler, init_model, LMForRewardModel, safe_math_eval
+from trainer.trainer_utils import Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model, LMForRewardModel, safe_math_eval
+from trainer.training_state import epoch_loader, training_batches, window_batches
 from trainer.rollout_engine import create_rollout_engine, compute_per_token_logps
 
 warnings.filterwarnings('ignore')
@@ -247,7 +248,8 @@ def calculate_rewards(prompts, completions, gt_batch, tools_batch, num_gen, rewa
 
 # ================================ Tools and rewards: end ================================
 def rl_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_model=None, start_step=0, wandb=None, use_sglang=False):
-    for step, batch in enumerate(loader, start=start_step + 1):
+    for step, batch in training_batches(loader, epoch, start_step, args.seed):
+        window_size = window_batches(step, iters, args.accumulation_steps, start_step)
         messages_batch = batch['messages']
         tools_batch = batch['tools']
         gt_batch = batch['gt']
@@ -333,7 +335,7 @@ def rl_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_model
             per_token_loss = -(torch.min(per_token_loss1, per_token_loss2) - args.beta * per_token_kl)
         policy_loss = (((per_token_loss * completion_mask).sum(dim=1)[valid_rows] / token_counts[valid_rows].clamp(min=1)).mean()
                        if valid_rows.any() else per_token_loss.sum() * 0.0)
-        loss = (policy_loss + aux_loss) / args.accumulation_steps
+        loss = (policy_loss + aux_loss) / window_size
         loss.backward()
 
         if step % args.accumulation_steps == 0 or step == iters:
@@ -341,7 +343,7 @@ def rl_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_model
             optimizer.step(); scheduler.step(); optimizer.zero_grad()
 
         if step % args.log_interval == 0 or step == iters:
-            pl = loss.item() * args.accumulation_steps
+            pl = loss.item() * window_size
             ar = rewards.mean().item()
             al = token_counts.float().mean().item()
             kl = ((ref_per_token_logps - per_token_logps) * completion_mask).sum().item() / max(token_counts.sum().item(), 1)
@@ -361,7 +363,8 @@ def rl_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_model
             state_dict = raw_model.state_dict()
             torch.save({k: v.half().cpu() for k, v in state_dict.items()}, ckp)
             lm_checkpoint(lm_config, weight=args.save_weight, model=model, optimizer=optimizer,
-                         epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints', scheduler=scheduler)
+                         epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints', scheduler=scheduler,
+                         epoch_batches=iters, batch_size=args.batch_size, accumulation_steps=args.accumulation_steps)
             model.train()
             del state_dict
 
@@ -410,11 +413,12 @@ if __name__ == "__main__":
     parser.add_argument("--sglang_base_url", type=str, default="http://localhost:8998", help="SGLang server URL")
     parser.add_argument("--sglang_model_path", type=str, default="../model", help="SGLang tokenizer path")
     parser.add_argument("--sglang_shared_path", type=str, default="./sglang_ckpt_agent", help="Shared storage path for SGLang")
+    parser.add_argument('--seed', default=42, type=int, help="Seed for initialization, data order and batch replay")
     args = parser.parse_args()
 
     local_rank = init_distributed_mode()
     if dist.is_initialized(): args.device = f"cuda:{local_rank}"
-    setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
+    setup_seed(args.seed + (dist.get_rank() if dist.is_initialized() else 0))
 
     os.makedirs(args.save_dir, exist_ok=True)
     lm_config = MiniMindConfig(hidden_size=args.hidden_size, num_hidden_layers=args.num_hidden_layers,
@@ -451,7 +455,7 @@ if __name__ == "__main__":
         sglang_shared_path=args.sglang_shared_path,
     )
     train_ds = AgentRLDataset(args.data_path, tokenizer, max_length=lm_config.max_seq_len)
-    train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
+    train_sampler = DistributedSampler(train_ds, seed=args.seed) if dist.is_initialized() else None
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
     def collate_fn(batch): return {'messages': [b['messages'] for b in batch], 'tools': [b['tools'] for b in batch], 'gt': [b['gt'] for b in batch]}
     loader_for_count = DataLoader(train_ds, batch_size=args.batch_size, sampler=train_sampler, collate_fn=collate_fn)
@@ -459,13 +463,12 @@ if __name__ == "__main__":
     total_optimizer_steps = math.ceil(iters / args.accumulation_steps) * args.epochs
     scheduler = CosineAnnealingLR(optimizer, T_max=total_optimizer_steps, eta_min=args.learning_rate / 10)
 
-    start_epoch, start_step = 0, 0
+    start_epoch = 0
     if ckp_data:
         model.load_state_dict(ckp_data['model'])
         optimizer.load_state_dict(ckp_data['optimizer'])
         scheduler.load_state_dict(ckp_data['scheduler'])
         start_epoch = ckp_data['epoch']
-        start_step = ckp_data.get('step', 0)
 
     if args.use_compile == 1:
         model = torch.compile(model)
@@ -476,16 +479,9 @@ if __name__ == "__main__":
     rollout_engine.update_policy(model)
 
     for epoch in range(start_epoch, args.epochs):
-        train_sampler and train_sampler.set_epoch(epoch)
-        setup_seed(42 + epoch); indices = torch.randperm(len(train_ds)).tolist()
-        skip = start_step if (epoch == start_epoch and start_step > 0) else 0
-        batch_sampler = SkipBatchSampler(train_sampler or indices, args.batch_size, skip)
-        loader = DataLoader(train_ds, batch_sampler=batch_sampler, num_workers=args.num_workers, pin_memory=True, collate_fn=collate_fn)
-        if skip > 0:
-            Logger(f'Epoch [{epoch+1}/{args.epochs}]: skip {start_step} steps')
-            rl_train_epoch(epoch, loader, len(loader) + skip, rollout_engine, ref_model, reward_model, start_step, wandb, use_sglang = (args.rollout_engine == "sglang"))
-        else:
-            rl_train_epoch(epoch, loader, len(loader), rollout_engine, ref_model, reward_model, 0, wandb, use_sglang = (args.rollout_engine == "sglang"))
+        loader, skip = epoch_loader(train_ds, train_sampler, args, epoch, ckp_data, collate_fn=collate_fn)
+        ckp_data = None
+        rl_train_epoch(epoch, loader, len(loader) + skip, rollout_engine, ref_model, reward_model, skip, wandb, use_sglang = (args.rollout_engine == "sglang"))
 
     if dist.is_initialized():
         dist.barrier()

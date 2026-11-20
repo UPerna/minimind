@@ -15,12 +15,13 @@ import torch.nn.functional as F
 from contextlib import nullcontext
 from torch import optim, nn
 from torch.nn.parallel import DistributedDataParallel
-from torch.utils.data import DataLoader, DistributedSampler
+from torch.utils.data import DistributedSampler
 from torch.nn.utils import clip_grad_norm_
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from model.model_minimind import MiniMindConfig, MiniMindForCausalLM
 from dataset.lm_dataset import RLAIFDataset
-from trainer.trainer_utils import Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, SkipBatchSampler, init_model, LMForRewardModel
+from trainer.trainer_utils import Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model, LMForRewardModel
+from trainer.training_state import epoch_loader, training_batches
 from trainer.rollout_engine import create_rollout_engine
 
 warnings.filterwarnings('ignore')
@@ -78,9 +79,21 @@ def calculate_rewards(prompts, responses, reward_model):
 def ppo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, actor_scheduler, critic_scheduler, reward_model, start_step=0, wandb=None):
     actor_model.train()
     critic_model.train()
-    grad_accum_step = 0
 
-    for step, batch in enumerate(loader, start=start_step + 1):
+    def apply_update(count):
+        for model, optimizer, scheduler in ((actor_model, actor_optimizer, actor_scheduler),
+                                            (critic_model, critic_optimizer, critic_scheduler)):
+            if count < args.accumulation_steps:
+                for parameter in model.parameters():
+                    if parameter.grad is not None:
+                        parameter.grad.mul_(args.accumulation_steps / count)
+            if args.grad_clip > 0:
+                clip_grad_norm_(model.parameters(), args.grad_clip)
+            optimizer.step()
+            scheduler.step()
+            optimizer.zero_grad()
+
+    for step, batch in training_batches(loader, epoch, start_step, args.seed):
         prompts = batch["prompt"]  # list[str], length B
         enc = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=args.max_seq_len,
                         padding_side="left").to(args.device)  # input_ids: [B, P], attention_mask: [B, P]
@@ -151,6 +164,7 @@ def ppo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, actor_sched
             advantages = (advantages - adv_mean) * torch.rsqrt(adv_var + 1e-8) * resp_policy_mask
 
         mb_size = max(1, min(args.mini_batch_size, B))
+        pending = 0
         stop_ppo = False
         policy_loss_sum = 0.0
         value_loss_sum = 0.0
@@ -222,6 +236,8 @@ def ppo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, actor_sched
                     loss = (policy_loss + args.vf_coef * value_loss + aux_loss) / args.accumulation_steps
                 
                 loss.backward()
+                if stop_ppo:
+                    break
 
                 policy_loss_sum += policy_loss.item()
                 value_loss_sum += value_loss.item()
@@ -231,27 +247,13 @@ def ppo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, actor_sched
                 aux_loss_sum += aux_loss.item()
                 log_count += 1
 
-                grad_accum_step += 1
+                pending += 1
+                if pending == args.accumulation_steps:
+                    apply_update(pending)
+                    pending = 0
 
-                if grad_accum_step % args.accumulation_steps == 0:
-                    clip_grad_norm_(actor_model.parameters(), args.grad_clip)
-                    clip_grad_norm_(critic_model.parameters(), args.grad_clip)
-                    actor_optimizer.step()
-                    critic_optimizer.step()
-                    actor_scheduler.step()
-                    critic_scheduler.step()
-                    actor_optimizer.zero_grad()
-                    critic_optimizer.zero_grad()
-
-        if grad_accum_step % args.accumulation_steps != 0:
-            clip_grad_norm_(actor_model.parameters(), args.grad_clip)
-            clip_grad_norm_(critic_model.parameters(), args.grad_clip)
-            actor_optimizer.step()
-            critic_optimizer.step()
-            actor_scheduler.step()
-            critic_scheduler.step()
-            actor_optimizer.zero_grad()
-            critic_optimizer.zero_grad()
+        if pending:
+            apply_update(pending)
         
         if step % args.save_interval == 0 or step == iters: rollout_engine.update_policy(actor_model)
 
@@ -294,7 +296,8 @@ def ppo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, actor_sched
             lm_checkpoint(lm_config, weight=args.save_weight, model=actor_model, optimizer=actor_optimizer, 
                          epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints',
                          scheduler=actor_scheduler, critic_model=critic_model, 
-                         critic_optimizer=critic_optimizer, critic_scheduler=critic_scheduler)
+                         critic_optimizer=critic_optimizer, critic_scheduler=critic_scheduler,
+                         epoch_batches=iters, batch_size=args.batch_size, accumulation_steps=1)
             actor_model.train()
             del actor_state
 
@@ -347,12 +350,13 @@ if __name__ == "__main__":
     parser.add_argument("--sglang_base_url", type=str, default="http://localhost:8998", help="SGLang server URL")
     parser.add_argument("--sglang_model_path", type=str, default="../model", help="SGLang tokenizer path")
     parser.add_argument("--sglang_shared_path", type=str, default="./sglang_ckpt_ppo", help="Shared storage path for SGLang")
+    parser.add_argument('--seed', default=42, type=int, help="Seed for initialization, data order and batch replay")
     args = parser.parse_args()
 
     # ========== 1. Initialize the environment and random seed. ==========
     local_rank = init_distributed_mode()
     if dist.is_initialized(): args.device = f"cuda:{local_rank}"
-    setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
+    setup_seed(args.seed + (dist.get_rank() if dist.is_initialized() else 0))
     
     # ========== 2. Set directories and model parameters, and look for a checkpoint. ==========
     os.makedirs(args.save_dir, exist_ok=True)
@@ -398,17 +402,20 @@ if __name__ == "__main__":
         sglang_shared_path=args.sglang_shared_path,
     )
     train_ds = RLAIFDataset(args.data_path, tokenizer, max_length=(args.max_seq_len + args.max_gen_len), thinking_ratio=args.thinking_ratio)
-    train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
+    train_sampler = DistributedSampler(train_ds, seed=args.seed) if dist.is_initialized() else None
     actor_optimizer = optim.AdamW(actor_model.parameters(), lr=args.learning_rate)
     critic_optimizer = optim.AdamW(critic_model.parameters(), lr=args.critic_learning_rate)
-    loader_for_count = DataLoader(train_ds, batch_size=args.batch_size, sampler=train_sampler)
-    iters = len(loader_for_count)
-    mb_factor = max(1, math.ceil(args.batch_size / args.mini_batch_size))
-    total_optimizer_steps = math.ceil(iters * args.epochs * args.ppo_update_iters * mb_factor / args.accumulation_steps)
+    # Each rollout flushes its pending minibatches before the next rollout starts.
+    def rollout_updates(size):
+        return math.ceil(math.ceil(size / args.mini_batch_size) * args.ppo_update_iters / args.accumulation_steps)
+
+    samples = len(train_sampler) if train_sampler is not None else len(train_ds)
+    full, tail = divmod(samples, args.batch_size)
+    total_optimizer_steps = (full * rollout_updates(args.batch_size) + rollout_updates(tail)) * args.epochs
     actor_scheduler = CosineAnnealingLR(actor_optimizer, T_max=total_optimizer_steps, eta_min=args.learning_rate / 10)
     critic_scheduler = CosineAnnealingLR(critic_optimizer, T_max=total_optimizer_steps, eta_min=args.critic_learning_rate / 10)
 
-    start_epoch, start_step = 0, 0
+    start_epoch = 0
     if ckp_data:
         actor_model.load_state_dict(ckp_data['model'])
         critic_model.load_state_dict(ckp_data['critic_model'])
@@ -417,7 +424,6 @@ if __name__ == "__main__":
         actor_scheduler.load_state_dict(ckp_data['scheduler'])
         critic_scheduler.load_state_dict(ckp_data['critic_scheduler'])
         start_epoch = ckp_data['epoch']
-        start_step = ckp_data.get('step', 0)
     
     # ========== 7. Compile and wrap for distributed training. ==========
     if args.use_compile == 1:
@@ -431,16 +437,9 @@ if __name__ == "__main__":
     
     # ========== 8. Start training. ==========
     for epoch in range(start_epoch, args.epochs):
-        train_sampler and train_sampler.set_epoch(epoch)
-        setup_seed(42 + epoch); indices = torch.randperm(len(train_ds)).tolist()
-        skip = start_step if (epoch == start_epoch and start_step > 0) else 0
-        batch_sampler = SkipBatchSampler(train_sampler or indices, args.batch_size, skip)
-        loader = DataLoader(train_ds, batch_sampler=batch_sampler, num_workers=args.num_workers, pin_memory=True)
-        if skip > 0: 
-            Logger(f'Epoch [{epoch + 1}/{args.epochs}]: skipping the first {start_step} steps and resuming at step {start_step + 1}.')
-            ppo_train_epoch(epoch, loader, len(loader) + skip, rollout_engine, ref_model, actor_scheduler, critic_scheduler, reward_model, start_step, wandb)
-        else:
-            ppo_train_epoch(epoch, loader, len(loader), rollout_engine, ref_model, actor_scheduler, critic_scheduler, reward_model, 0, wandb)
+        loader, skip = epoch_loader(train_ds, train_sampler, args, epoch, ckp_data, rollout_complete=True)
+        ckp_data = None
+        ppo_train_epoch(epoch, loader, len(loader) + skip, rollout_engine, ref_model, actor_scheduler, critic_scheduler, reward_model, skip, wandb)
     
     # ========== 9. Clean up distributed processes. ==========
     if dist.is_initialized():

@@ -2,6 +2,7 @@ import os
 import time
 import argparse
 import random
+import math
 import warnings
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, TextStreamer
@@ -42,13 +43,15 @@ def main():
     parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="Use the MoE architecture (0 = no, 1 = yes)")
     parser.add_argument('--inference_rope_scaling', default=False, action='store_true', help="Enable 4x RoPE extrapolation for position encoding")
     parser.add_argument('--max_new_tokens', default=8192, type=int, help="Maximum number of new tokens; the effective context capability depends on the model")
-    parser.add_argument('--temperature', default=0.85, type=float, help="Sampling temperature (0 to 1; higher values increase randomness)")
+    parser.add_argument('--temperature', default=0.85, type=float, help="Sampling temperature (0 selects greedy decoding)")
     parser.add_argument('--top_p', default=0.95, type=float, help="Nucleus sampling threshold (0 to 1)")
     parser.add_argument('--open_thinking', default=0, type=int, help="Enable adaptive thinking (0 = no, 1 = yes)")
     parser.add_argument('--historys', default=0, type=int, help="Number of messages from earlier turns to include (even; 0 disables history)")
     parser.add_argument('--show_speed', default=1, type=int, help="Show decoding speed in tokens per second")
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="Device for inference")
     args = parser.parse_args()
+    if not math.isfinite(args.temperature) or args.temperature < 0:
+        parser.error("--temperature must be finite and nonnegative")
     
     prompts = [
         'What are you good at?',
@@ -83,7 +86,7 @@ def main():
         st = time.time()
         generated_ids = model.generate(
             inputs=inputs["input_ids"], attention_mask=inputs["attention_mask"],
-            max_new_tokens=args.max_new_tokens, do_sample=True, streamer=streamer,
+            max_new_tokens=args.max_new_tokens, do_sample=args.temperature > 0, streamer=streamer,
             pad_token_id=tokenizer.pad_token_id, eos_token_id=tokenizer.eos_token_id,
             top_p=args.top_p, temperature=args.temperature, repetition_penalty=1
         )

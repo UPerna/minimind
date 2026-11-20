@@ -1,0 +1,183 @@
+{
+  "cases_sha256": "73aac2218016f1b12a2b99fcf2d27ee26313221abcde9588cd51753b49ffe6d4",
+  "model_files_sha256": {
+    "chat_template.jinja": "97c6a9ef3f8d35044f435bb7773f1af160a7328ab6e8d2e9d67702941320a711",
+    "config.json": "efcfa39ede9bbb5b64ded2bb90969e4b840f0f9e1e36725d386acb7eca1c6d05",
+    "generation_config.json": "f71e92a23c78f97b9901adc00751d228a63bc5fda3e79fff6740b743b09227c9",
+    "model.safetensors": "8fb619437daff233903cc06644f28ad7458193806a53b71f79240b827767ad05",
+    "special_tokens_map.json": "f85ecedc16cf0083242e21ac2ef23ac613153b71240c7d2ab61de24f085d2db9",
+    "tokenizer.json": "71f32c68cf63a15355a8fc171b7594b3d41870fe0ddb54fc6aefa55f73a4a668",
+    "tokenizer_config.json": "04ae7620b9cf93fd2d6fbf94936b0c3c4be65f30cd6ef6fa8741baac986525d1"
+  },
+  "torch": "2.6.0+cpu",
+  "transformers": "4.57.6",
+  "device": "cpu",
+  "dtype": "float32",
+  "max_new_tokens": 32,
+  "greedy": true,
+  "open_thinking": false,
+  "summary": {
+    "en": {
+      "correct": 0,
+      "total": 6,
+      "ended_with_eos": 6
+    },
+    "it": {
+      "correct": 0,
+      "total": 6,
+      "ended_with_eos": 6
+    },
+    "zh": {
+      "correct": 1,
+      "total": 6,
+      "ended_with_eos": 4
+    }
+  },
+  "results": [
+    {
+      "case": "italian_capital",
+      "language": "en",
+      "answer": "The capital of Italy",
+      "correct": false,
+      "generated_tokens": 7,
+      "stop": "eos"
+    },
+    {
+      "case": "italian_capital",
+      "language": "it",
+      "answer": "Nairobi",
+      "correct": false,
+      "generated_tokens": 6,
+      "stop": "eos"
+    },
+    {
+      "case": "italian_capital",
+      "language": "zh",
+      "answer": "罗马",
+      "correct": true,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "water_formula",
+      "language": "en",
+      "answer": "2000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "water_formula",
+      "language": "it",
+      "answer": "Madrid",
+      "correct": false,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "water_formula",
+      "language": "zh",
+      "answer": "水的化学式是C6",
+      "correct": false,
+      "generated_tokens": 8,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract",
+      "language": "en",
+      "answer": "5",
+      "correct": false,
+      "generated_tokens": 2,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract",
+      "language": "it",
+      "answer": "41",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "subtract",
+      "language": "zh",
+      "answer": "47",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "litres_to_millilitres",
+      "language": "en",
+      "answer": "2000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "litres_to_millilitres",
+      "language": "it",
+      "answer": "2000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "litres_to_millilitres",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n0.75",
+      "correct": false,
+      "generated_tokens": 10,
+      "stop": "eos"
+    },
+    {
+      "case": "debt_service_ratio",
+      "language": "en",
+      "answer": "DSCR",
+      "correct": false,
+      "generated_tokens": 4,
+      "stop": "eos"
+    },
+    {
+      "case": "debt_service_ratio",
+      "language": "it",
+      "answer": "1000",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "debt_service_ratio",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    },
+    {
+      "case": "extract_code",
+      "language": "en",
+      "answer": "6",
+      "correct": false,
+      "generated_tokens": 2,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_code",
+      "language": "it",
+      "answer": "26",
+      "correct": false,
+      "generated_tokens": 3,
+      "stop": "eos"
+    },
+    {
+      "case": "extract_code",
+      "language": "zh",
+      "answer": "<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\n<think>\n\n</think>\n\nVE",
+      "correct": false,
+      "generated_tokens": 32,
+      "stop": "token_limit"
+    }
+  ],
+  "threads": 2
+}

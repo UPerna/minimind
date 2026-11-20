@@ -1,6 +1,9 @@
 import os
 import sys
 import json
+import argparse
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 __package__ = "scripts"
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -12,6 +15,37 @@ from model.model_minimind import MiniMindConfig, MiniMindForCausalLM
 from model.model_lora import apply_lora, merge_lora
 
 warnings.filterwarnings('ignore', category=UserWarning)
+TOKENIZER_PATH = Path(__file__).resolve().parents[1] / "model"
+
+def repair_generation_config(directory):
+    """Fill missing generation IDs in an existing local export without loading its weights."""
+    directory = Path(directory).resolve(strict=True)
+    tokenizer = AutoTokenizer.from_pretrained(directory, local_files_only=True)
+    path = directory / "generation_config.json"
+    config = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    # Respect additional EOS IDs and generation options already chosen by the model author.
+    model_config = json.loads((directory / "config.json").read_text(encoding="utf-8"))
+    changed = False
+    for name in ("bos_token_id", "eos_token_id", "pad_token_id"):
+        if config.get(name) is None:
+            value = model_config.get(name)
+            if value is None:
+                value = getattr(tokenizer, name)
+            if value is not None:
+                config[name] = value
+                changed = True
+    if changed:
+        tmp = NamedTemporaryFile(mode="w", encoding="utf-8", dir=directory, delete=False)
+        try:
+            with tmp:
+                json.dump(config, tmp, indent=2, ensure_ascii=False)
+                tmp.write("\n")
+            if path.exists():
+                os.chmod(tmp.name, path.stat().st_mode & 0o777)
+            os.replace(tmp.name, path)
+        finally:
+            Path(tmp.name).unlink(missing_ok=True)
+    return path
 
 def convert_torch2transformers_minimind(torch_path, transformers_path, dtype=torch.float16):
     MiniMindConfig.register_for_auto_class()
@@ -24,7 +58,7 @@ def convert_torch2transformers_minimind(torch_path, transformers_path, dtype=tor
     model_params = sum(p.numel() for p in lm_model.parameters() if p.requires_grad)
     print(f'Model parameters: {model_params / 1e6} million = {model_params / 1e9} billion')
     lm_model.save_pretrained(transformers_path, safe_serialization=False)
-    tokenizer = AutoTokenizer.from_pretrained('../model/')
+    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH)
     tokenizer.save_pretrained(transformers_path)
     # ======= Use a form compatible with both Transformers 5.0 and earlier releases. =======
     if int(transformers.__version__.split('.')[0]) >= 5:
@@ -40,7 +74,11 @@ def convert_torch2transformers_minimind(torch_path, transformers_path, dtype=tor
 def convert_torch2transformers(torch_path, transformers_path, dtype=torch.float16):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     state_dict = torch.load(torch_path, map_location=device)
+    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH)
     common_config = {
+        "bos_token_id": tokenizer.bos_token_id,
+        "eos_token_id": tokenizer.eos_token_id,
+        "pad_token_id": tokenizer.pad_token_id,
         "vocab_size": lm_config.vocab_size,
         "hidden_size": lm_config.hidden_size,
         "intermediate_size": lm_config.intermediate_size,
@@ -83,7 +121,6 @@ def convert_torch2transformers(torch_path, transformers_path, dtype=torch.float1
     qwen_model.save_pretrained(transformers_path)
     model_params = sum(p.numel() for p in qwen_model.parameters() if p.requires_grad)
     print(f'Model parameters: {model_params / 1e6} million = {model_params / 1e9} billion')
-    tokenizer = AutoTokenizer.from_pretrained('../model/')
     tokenizer.save_pretrained(transformers_path)
 
     # ======= Use a form compatible with both Transformers 5.0 and earlier releases. =======
@@ -126,6 +163,12 @@ def convert_json_to_jinja(json_file_path, output_path):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Export MiniMind weights or repair a local export's generation metadata")
+    parser.add_argument('--repair-generation-config', metavar='DIRECTORY', help="Fill missing BOS, EOS and padding IDs in a local release")
+    args = parser.parse_args()
+    if args.repair_generation_config:
+        print(repair_generation_config(args.repair_generation_config))
+        sys.exit(0)
     lm_config = MiniMindConfig(hidden_size=768, num_hidden_layers=8, max_seq_len=8192, use_moe=False)
 
     # convert torch to transformers

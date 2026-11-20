@@ -22,7 +22,8 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from transformers import AutoModel
 from model.model_minimind import MiniMindConfig, MiniMindForCausalLM
 from dataset.lm_dataset import RLAIFDataset
-from trainer.trainer_utils import Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, SkipBatchSampler, init_model, LMForRewardModel
+from trainer.trainer_utils import Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model, LMForRewardModel
+from trainer.training_state import epoch_loader, training_batches, window_batches
 from trainer.rollout_engine import create_rollout_engine
 
 warnings.filterwarnings('ignore')
@@ -69,7 +70,8 @@ def calculate_rewards(prompts, responses, reward_model):
 
 
 def grpo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_model, start_step=0, wandb=None, use_sglang=False):
-    for step, batch in enumerate(loader, start=start_step + 1):
+    for step, batch in training_batches(loader, epoch, start_step, args.seed):
+        window_size = window_batches(step, iters, args.accumulation_steps, start_step)
         prompts = batch['prompt']  # list[str], length B
         prompt_inputs = tokenizer(prompts, return_tensors="pt", padding=True, return_token_type_ids=False,
                                   padding_side="left", add_special_tokens=False).to(args.device)
@@ -141,7 +143,7 @@ def grpo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_mod
             per_token_loss2 = clipped_ratio * advantages.unsqueeze(1)
             per_token_loss = -(torch.min(per_token_loss1, per_token_loss2) - args.beta * per_token_kl)
         policy_loss = ((per_token_loss * completion_mask).sum(dim=1) / completion_mask.sum(dim=1).clamp(min=1)).mean()
-        loss = (policy_loss + aux_loss) / args.accumulation_steps  # scalar
+        loss = (policy_loss + aux_loss) / window_size  # scalar
         loss.backward()
 
         if step % args.accumulation_steps == 0 or step == iters:
@@ -152,7 +154,7 @@ def grpo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_mod
             optimizer.zero_grad()
 
         if step % args.log_interval == 0 or step == iters:
-            policy_loss_val = loss.item() * args.accumulation_steps
+            policy_loss_val = loss.item() * window_size
             current_aux_loss = aux_loss.item()
             avg_reward_val = rewards.mean().item()
             avg_len_val = completion_mask.sum(dim=1).float().mean().item()
@@ -186,7 +188,8 @@ def grpo_train_epoch(epoch, loader, iters, rollout_engine, ref_model, reward_mod
             state_dict = raw_model.state_dict()
             torch.save({k: v.half().cpu() for k, v in state_dict.items()}, ckp)
             lm_checkpoint(lm_config, weight=args.save_weight, model=model, optimizer=optimizer, 
-                         epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints', scheduler=scheduler)
+                         epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints', scheduler=scheduler,
+                         epoch_batches=iters, batch_size=args.batch_size, accumulation_steps=args.accumulation_steps)
             model.train()
             del state_dict
 
@@ -234,12 +237,13 @@ if __name__ == "__main__":
     parser.add_argument("--sglang_base_url", type=str, default="http://localhost:8998", help="SGLang server URL")
     parser.add_argument("--sglang_model_path", type=str, default="../model", help="SGLang tokenizer path")
     parser.add_argument("--sglang_shared_path", type=str, default="./sglang_ckpt_grpo", help="Shared storage path for SGLang")
+    parser.add_argument('--seed', default=42, type=int, help="Seed for initialization, data order and batch replay")
     args = parser.parse_args()
 
     # ========== 1. Initialize the environment and random seed. ==========
     local_rank = init_distributed_mode()
     if dist.is_initialized(): args.device = f"cuda:{local_rank}"
-    setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
+    setup_seed(args.seed + (dist.get_rank() if dist.is_initialized() else 0))
     
     # ========== 2. Set directories and model parameters, and look for a checkpoint. ==========
     os.makedirs(args.save_dir, exist_ok=True)
@@ -283,7 +287,7 @@ if __name__ == "__main__":
     )
     # Data and optimizer
     train_ds = RLAIFDataset(args.data_path, tokenizer, max_length=lm_config.max_seq_len, thinking_ratio=args.thinking_ratio)
-    train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
+    train_sampler = DistributedSampler(train_ds, seed=args.seed) if dist.is_initialized() else None
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
     loader_for_count = DataLoader(train_ds, batch_size=args.batch_size, sampler=train_sampler)
     iters = len(loader_for_count)
@@ -291,13 +295,12 @@ if __name__ == "__main__":
     scheduler = CosineAnnealingLR(optimizer, T_max=total_optimizer_steps, eta_min=args.learning_rate / 10)
     
     # ========== 6. Restore checkpoint state. ==========
-    start_epoch, start_step = 0, 0
+    start_epoch = 0
     if ckp_data:
         model.load_state_dict(ckp_data['model'])
         optimizer.load_state_dict(ckp_data['optimizer'])
         scheduler.load_state_dict(ckp_data['scheduler'])
         start_epoch = ckp_data['epoch']
-        start_step = ckp_data.get('step', 0)
     
     # ========== 7. Compile and wrap for distributed training. ==========
     if args.use_compile == 1:
@@ -310,16 +313,9 @@ if __name__ == "__main__":
     
     # ========== 8. Start training. ==========
     for epoch in range(start_epoch, args.epochs):
-        train_sampler and train_sampler.set_epoch(epoch)
-        setup_seed(42 + epoch); indices = torch.randperm(len(train_ds)).tolist()
-        skip = start_step if (epoch == start_epoch and start_step > 0) else 0
-        batch_sampler = SkipBatchSampler(train_sampler or indices, args.batch_size, skip)
-        loader = DataLoader(train_ds, batch_sampler=batch_sampler, num_workers=args.num_workers, pin_memory=True)
-        if skip > 0: 
-            Logger(f'Epoch [{epoch + 1}/{args.epochs}]: skipping the first {start_step} steps and resuming at step {start_step + 1}.')
-            grpo_train_epoch(epoch, loader, len(loader) + skip, rollout_engine, ref_model, reward_model, start_step, wandb, use_sglang = (args.rollout_engine == "sglang"))
-        else:
-            grpo_train_epoch(epoch, loader, len(loader), rollout_engine, ref_model, reward_model, 0, wandb, use_sglang = (args.rollout_engine == "sglang"))
+        loader, skip = epoch_loader(train_ds, train_sampler, args, epoch, ckp_data)
+        ckp_data = None
+        grpo_train_epoch(epoch, loader, len(loader) + skip, rollout_engine, ref_model, reward_model, skip, wandb, use_sglang = (args.rollout_engine == "sglang"))
     
     # ========== 9. Clean up distributed processes. ==========
     if dist.is_initialized():

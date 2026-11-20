@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import re
+import math
 import json
 import time
 import random
@@ -121,7 +122,7 @@ def generate(model, tokenizer, messages, tools, args):
     print('🧠: ', end='')
     generated_ids = model.generate(
         inputs["input_ids"], attention_mask=inputs["attention_mask"],
-        max_new_tokens=args.max_new_tokens, do_sample=True, streamer=streamer,
+        max_new_tokens=args.max_new_tokens, do_sample=args.temperature > 0, streamer=streamer,
         pad_token_id=tokenizer.pad_token_id, eos_token_id=tokenizer.eos_token_id,
         top_p=args.top_p, temperature=args.temperature
     )
@@ -210,7 +211,7 @@ def main():
     parser.add_argument('--num_hidden_layers', default=8, type=int, help="Number of hidden layers")
     parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="Use the MoE architecture (0 = no, 1 = yes)")
     parser.add_argument('--max_new_tokens', default=512, type=int, help="Maximum number of new tokens")
-    parser.add_argument('--temperature', default=0.9, type=float, help="Sampling temperature (0 to 1; higher values increase randomness)")
+    parser.add_argument('--temperature', default=0.9, type=float, help="Sampling temperature (0 selects greedy decoding)")
     parser.add_argument('--top_p', default=0.9, type=float, help="Nucleus sampling threshold (0 to 1)")
     parser.add_argument('--show_speed', default=0, type=int, help="Show decoding speed in tokens per second")
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="Device for inference")
@@ -219,6 +220,8 @@ def main():
     parser.add_argument('--api_model', default='jingyaogong/minimind-3:latest', type=str, help="Model name to send in API requests")
     parser.add_argument('--stream', default=1, type=int, help="Stream responses in API mode (0 = no, 1 = yes)")
     args = parser.parse_args()
+    if not math.isfinite(args.temperature) or args.temperature < 0:
+        parser.error("--temperature must be finite and nonnegative")
 
     model = tokenizer = client = None
     if args.backend == 'local': model, tokenizer = init_model(args)
