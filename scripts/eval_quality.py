@@ -40,7 +40,7 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
-def evaluate(model_dir, cases_path, limit, device):
+def evaluate(model_dir, cases_path, limit, device, batch_size=1):
     cases = json.loads(cases_path.read_text(encoding="utf-8"))
     tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True)
     model = AutoModelForCausalLM.from_pretrained(model_dir, local_files_only=True, dtype=torch.float32).to(device).eval()
@@ -50,26 +50,29 @@ def evaluate(model_dir, cases_path, limit, device):
     eos_ids = eos if isinstance(eos, list) else [eos]
     rows = []
     totals = {}
+    items = [(case, language, prompt) for case in cases for language, prompt in case["prompts"].items()]
+    tokenizer.padding_side = "left"
     with torch.inference_mode():
-        for case in cases:
-            for language, prompt in case["prompts"].items():
-                inputs = tokenizer.apply_chat_template(
-                    [{"role": "user", "content": prompt}], add_generation_prompt=True, open_thinking=False,
-                    return_dict=True, return_tensors="pt",
-                ).to(device)
-                output = model.generate(inputs.input_ids, attention_mask=inputs.attention_mask,
-                                        do_sample=False, max_new_tokens=limit,
-                                        pad_token_id=tokenizer.pad_token_id, eos_token_id=eos)
-                tokens = output[0, inputs.input_ids.shape[1]:].tolist()
-                ended = bool(tokens and tokens[-1] in eos_ids)
-                answer = tokenizer.decode(tokens[:-1] if ended else tokens, skip_special_tokens=False)
+        for start in range(0, len(items), batch_size):
+            batch = items[start:start + batch_size]
+            messages = [[{"role": "user", "content": prompt}] for _, _, prompt in batch]
+            inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, open_thinking=False,
+                                                  padding=True, return_dict=True, return_tensors="pt").to(device)
+            output = model.generate(inputs.input_ids, attention_mask=inputs.attention_mask,
+                                    do_sample=False, max_new_tokens=limit,
+                                    pad_token_id=tokenizer.pad_token_id, eos_token_id=eos)
+            completions = output[:, inputs.input_ids.shape[1]:].tolist()
+            for (case, language, _), tokens in zip(batch, completions):
+                end = next((i for i, token in enumerate(tokens) if token in eos_ids), len(tokens))
+                ended = end < len(tokens)
+                answer = tokenizer.decode(tokens[:end], skip_special_tokens=False)
                 passed = matches_answer(answer, case, language)
                 summary = totals.setdefault(language, {"correct": 0, "total": 0, "ended_with_eos": 0})
                 summary["correct"] += int(passed)
                 summary["total"] += 1
                 summary["ended_with_eos"] += int(ended)
                 rows.append({"case": case["id"], "language": language, "answer": answer, "correct": passed,
-                             "generated_tokens": len(tokens), "stop": "eos" if ended else "token_limit"})
+                             "generated_tokens": end + int(ended), "stop": "eos" if ended else "token_limit"})
     names = ("*.safetensors", "pytorch_model*.bin", "*.index.json", "config.json", "generation_config.json",
              "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "*.jinja")
     files = sorted({path for name in names for path in model_dir.glob(name)})
@@ -87,12 +90,15 @@ def main():
     parser.add_argument("--device", default="cpu", help="Torch device, e.g. cpu, mps or cuda:0")
     parser.add_argument("--max-new-tokens", default=32, type=int)
     parser.add_argument("--threads", type=int, default=2, help="CPU threads")
+    parser.add_argument("--batch-size", type=int, default=1, help="Number of prompts to decode together")
     args = parser.parse_args()
-    if min(args.threads, args.max_new_tokens) < 1:
-        parser.error("threads and max-new-tokens must be positive")
+    if min(args.threads, args.max_new_tokens, args.batch_size) < 1:
+        parser.error("threads, batch-size and max-new-tokens must be positive")
     torch.set_num_threads(args.threads)
-    report = evaluate(args.model, args.cases, args.max_new_tokens, args.device)
+    report = evaluate(args.model, args.cases, args.max_new_tokens, args.device, args.batch_size)
     report["threads"] = args.threads
+    if args.batch_size != 1:
+        report["batch_size"] = args.batch_size
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report["summary"], indent=2))
 
