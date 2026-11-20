@@ -1,0 +1,1484 @@
+{
+  "dataset": "facebook/belebele",
+  "revision": "7899cdfa4e1e0d733fd77c848e2c273cb1d32be2",
+  "weights_sha256": "03f7af72b45ef1952cbf9ccc7d8ddec5d6ab41470c768d4628c1e2887aa8235a",
+  "torch": "2.6.0+cpu",
+  "transformers": "4.57.6",
+  "dtype": "float32",
+  "device": "cpu",
+  "threads": 3,
+  "batch_size": 4,
+  "scoring": "mean_log_probability_of_answer_tokens",
+  "summary": {
+    "en": {
+      "items": 24,
+      "with_passage": 8,
+      "question_only": 9,
+      "gained_with_passage": 4,
+      "lost_with_passage": 5
+    },
+    "it": {
+      "items": 24,
+      "with_passage": 8,
+      "question_only": 6,
+      "gained_with_passage": 6,
+      "lost_with_passage": 4
+    },
+    "zh": {
+      "items": 24,
+      "with_passage": 7,
+      "question_only": 9,
+      "gained_with_passage": 4,
+      "lost_with_passage": 6
+    },
+    "all": {
+      "items": 72,
+      "with_passage": 23,
+      "question_only": 24,
+      "gained_with_passage": 14,
+      "lost_with_passage": 15
+    }
+  },
+  "results": [
+    {
+      "link": "https://en.wikibooks.org/wiki/Introduction_to_Paleoanthropology/Bones",
+      "question_number": 2,
+      "language": "en",
+      "gold": "C",
+      "passage": "C",
+      "passage_mean_logp": [
+        -4.139363,
+        -3.361409,
+        -2.056836,
+        -3.125255
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.381418,
+        -4.337101,
+        -3.821045,
+        -4.05267
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Introduction_to_Paleoanthropology/Bones",
+      "question_number": 2,
+      "language": "it",
+      "gold": "C",
+      "passage": "D",
+      "passage_mean_logp": [
+        -4.648975,
+        -4.29718,
+        -5.439931,
+        -4.037996
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -6.229364,
+        -6.30513,
+        -6.823521,
+        -5.229006
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Introduction_to_Paleoanthropology/Bones",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "C",
+      "passage": "C",
+      "passage_mean_logp": [
+        -3.711165,
+        -5.533,
+        -3.493864,
+        -5.880917
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.219769,
+        -6.113643,
+        -5.916567,
+        -6.106279
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Learning_Theories/Post-Modern_Theories",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "passage": "D",
+      "passage_mean_logp": [
+        -3.743268,
+        -3.547487,
+        -3.483235,
+        -2.544388
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -3.616862,
+        -3.791427,
+        -3.211948,
+        -3.091315
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Learning_Theories/Post-Modern_Theories",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "passage": "D",
+      "passage_mean_logp": [
+        -4.264897,
+        -5.59621,
+        -5.515895,
+        -2.982305
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.162688,
+        -5.754691,
+        -5.410957,
+        -4.467266
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Learning_Theories/Post-Modern_Theories",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "passage": "C",
+      "passage_mean_logp": [
+        -5.212847,
+        -4.858377,
+        -4.794181,
+        -4.965621
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.986786,
+        -5.367573,
+        -4.791079,
+        -5.132192
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:Bugs/Insects_Intro",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "passage": "C",
+      "passage_mean_logp": [
+        -5.793917,
+        -3.82126,
+        -3.412954,
+        -6.756159
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -6.548515,
+        -4.377655,
+        -5.863319,
+        -5.508027
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:Bugs/Insects_Intro",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.080542,
+        -3.149344,
+        -3.29311,
+        -5.53793
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -6.385891,
+        -6.179411,
+        -6.146745,
+        -7.062037
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:Bugs/Insects_Intro",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "passage": "B",
+      "passage_mean_logp": [
+        -6.934515,
+        -5.537993,
+        -6.237437,
+        -6.551175
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -7.273517,
+        -4.125142,
+        -7.444054,
+        -6.83521
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Wildlife_photography",
+      "question_number": 2,
+      "language": "en",
+      "gold": "C",
+      "passage": "B",
+      "passage_mean_logp": [
+        -2.735321,
+        -2.502353,
+        -4.258263,
+        -4.294311
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -3.616784,
+        -2.564424,
+        -4.534811,
+        -4.24896
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Wildlife_photography",
+      "question_number": 2,
+      "language": "it",
+      "gold": "C",
+      "passage": "A",
+      "passage_mean_logp": [
+        -3.291839,
+        -4.181062,
+        -5.918787,
+        -5.389293
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -6.277021,
+        -5.832183,
+        -5.722664,
+        -6.312052
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Wildlife_photography",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "C",
+      "passage": "A",
+      "passage_mean_logp": [
+        -3.56688,
+        -6.708943,
+        -6.802139,
+        -4.010444
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -4.487889,
+        -6.675814,
+        -8.42856,
+        -4.152792
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Hurricane_Fred_churns_the_Atlantic",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "passage": "C",
+      "passage_mean_logp": [
+        -4.864048,
+        -5.879654,
+        -4.132731,
+        -6.497474
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -6.264964,
+        -5.98175,
+        -3.766123,
+        -6.589483
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Hurricane_Fred_churns_the_Atlantic",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.375988,
+        -5.136074,
+        -8.236137,
+        -6.410405
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -5.530692,
+        -6.767411,
+        -8.22242,
+        -9.095125
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Hurricane_Fred_churns_the_Atlantic",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "passage": "C",
+      "passage_mean_logp": [
+        -11.097227,
+        -8.197649,
+        -7.470011,
+        -14.710078
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -12.350422,
+        -9.779087,
+        -8.073109,
+        -14.675231
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Animal_Behavior/Population_Genetics",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "passage": "A",
+      "passage_mean_logp": [
+        -0.938177,
+        -2.240555,
+        -2.030396,
+        -1.131176
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -4.762872,
+        -3.88746,
+        -3.445011,
+        -2.935766
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Animal_Behavior/Population_Genetics",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "passage": "D",
+      "passage_mean_logp": [
+        -3.148746,
+        -4.312419,
+        -3.365446,
+        -2.946983
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -5.647466,
+        -5.791822,
+        -4.450801,
+        -8.214601
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Animal_Behavior/Population_Genetics",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.789806,
+        -5.825243,
+        -9.059423,
+        -1.808497
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -9.287458,
+        -7.563238,
+        -7.897368,
+        -5.264191
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Astronomy",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "passage": "D",
+      "passage_mean_logp": [
+        -4.058572,
+        -5.134182,
+        -3.996446,
+        -3.089554
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -3.62133,
+        -4.985792,
+        -3.624345,
+        -3.319695
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Astronomy",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.775626,
+        -5.516936,
+        -6.500659,
+        -5.57272
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -6.132099,
+        -7.459505,
+        -6.135983,
+        -6.682092
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Astronomy",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.14236,
+        -3.232146,
+        -4.436004,
+        -3.894807
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.900955,
+        -4.793424,
+        -5.611232,
+        -4.621838
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Plitvice_Lakes_National_Park",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.758358,
+        -6.215419,
+        -6.575685,
+        -2.783784
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -7.147447,
+        -6.90542,
+        -6.690361,
+        -3.746448
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Plitvice_Lakes_National_Park",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "passage": "B",
+      "passage_mean_logp": [
+        -4.177958,
+        -3.274035,
+        -5.445144,
+        -7.129388
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -7.132643,
+        -3.509479,
+        -7.375011,
+        -8.107988
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Plitvice_Lakes_National_Park",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.755081,
+        -2.440496,
+        -3.646867,
+        -1.9931
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -5.476012,
+        -3.056547,
+        -6.309258,
+        -4.36551
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/The_Seven_Wonders_of_the_World/The_Great_Pyramid",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "passage": "D",
+      "passage_mean_logp": [
+        -4.033667,
+        -3.950121,
+        -2.110897,
+        -0.27783
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.821374,
+        -5.462418,
+        -4.03021,
+        -2.615766
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/The_Seven_Wonders_of_the_World/The_Great_Pyramid",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "passage": "D",
+      "passage_mean_logp": [
+        -6.235831,
+        -3.892338,
+        -3.517382,
+        -0.681134
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.92865,
+        -5.020392,
+        -7.05845,
+        -4.671954
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/The_Seven_Wonders_of_the_World/The_Great_Pyramid",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "passage": "D",
+      "passage_mean_logp": [
+        -3.325541,
+        -3.641949,
+        -2.128109,
+        -0.372145
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -5.063572,
+        -6.937429,
+        -4.025496,
+        -4.639196
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Music_festival_circuit",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "passage": "B",
+      "passage_mean_logp": [
+        -3.686589,
+        -2.311539,
+        -3.692554,
+        -2.802315
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.38213,
+        -6.800344,
+        -4.325963,
+        -5.033362
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Music_festival_circuit",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "passage": "C",
+      "passage_mean_logp": [
+        -4.412968,
+        -4.299454,
+        -4.20427,
+        -6.156127
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -5.461583,
+        -9.589598,
+        -7.210669,
+        -5.921753
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Music_festival_circuit",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.343786,
+        -1.816314,
+        -1.95439,
+        -2.812952
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -6.342223,
+        -5.206172,
+        -4.558376,
+        -6.228563
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/South_Pole",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.977458,
+        -2.760286,
+        -2.71522,
+        -3.35916
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.752251,
+        -4.464707,
+        -4.376628,
+        -4.324501
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/South_Pole",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "passage": "C",
+      "passage_mean_logp": [
+        -3.592515,
+        -4.181941,
+        -2.788307,
+        -4.959333
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -6.25866,
+        -6.87571,
+        -7.570613,
+        -6.461332
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/South_Pole",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "passage": "C",
+      "passage_mean_logp": [
+        -4.029331,
+        -4.257472,
+        -3.225812,
+        -5.641684
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -6.338742,
+        -6.017014,
+        -6.18554,
+        -7.821537
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Castles_of_England/Tudor_Castles",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "passage": "A",
+      "passage_mean_logp": [
+        -2.672292,
+        -3.732731,
+        -2.82527,
+        -4.083061
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.032694,
+        -4.346519,
+        -3.232409,
+        -5.007209
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Castles_of_England/Tudor_Castles",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "passage": "C",
+      "passage_mean_logp": [
+        -5.29313,
+        -4.776587,
+        -4.283176,
+        -6.006607
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -5.780515,
+        -5.061403,
+        -5.373873,
+        -7.786743
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Castles_of_England/Tudor_Castles",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "passage": "A",
+      "passage_mean_logp": [
+        -2.57102,
+        -4.233265,
+        -3.366378,
+        -4.066686
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.368053,
+        -4.689322,
+        -4.034492,
+        -5.804758
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Managing_Groups_and_Teams/How_Do_You_Build_High-performing_Virtual_Teams%3F",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "passage": "B",
+      "passage_mean_logp": [
+        -2.724685,
+        -2.126914,
+        -2.764447,
+        -3.468199
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -2.440918,
+        -2.253639,
+        -3.679309,
+        -3.660664
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Managing_Groups_and_Teams/How_Do_You_Build_High-performing_Virtual_Teams%3F",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "passage": "C",
+      "passage_mean_logp": [
+        -7.259642,
+        -5.641282,
+        -5.227167,
+        -8.163841
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -6.901704,
+        -6.074775,
+        -6.7313,
+        -8.146926
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Managing_Groups_and_Teams/How_Do_You_Build_High-performing_Virtual_Teams%3F",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.676179,
+        -2.931938,
+        -4.421568,
+        -3.421403
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -5.737145,
+        -3.303291,
+        -5.585166,
+        -3.672011
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Transport/History",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "passage": "B",
+      "passage_mean_logp": [
+        -3.329559,
+        -3.209607,
+        -4.297272,
+        -3.981675
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.773927,
+        -4.892533,
+        -6.723419,
+        -5.994203
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Transport/History",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "passage": "D",
+      "passage_mean_logp": [
+        -3.08795,
+        -3.628062,
+        -2.826053,
+        -2.747396
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -6.593675,
+        -7.469108,
+        -7.605673,
+        -7.370764
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Transport/History",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "passage": "D",
+      "passage_mean_logp": [
+        -2.860945,
+        -3.189355,
+        -2.780942,
+        -2.720049
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.844051,
+        -5.366802,
+        -5.373425,
+        -5.149271
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Canadian_professional_wrestler_Luna_Vachon_dies_aged_48",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "passage": "D",
+      "passage_mean_logp": [
+        -2.819072,
+        -0.986005,
+        -3.132237,
+        -0.916355
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -6.37539,
+        -3.097364,
+        -3.565146,
+        -3.994294
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Canadian_professional_wrestler_Luna_Vachon_dies_aged_48",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "passage": "B",
+      "passage_mean_logp": [
+        -2.827374,
+        -1.240516,
+        -3.522859,
+        -1.266164
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -6.348528,
+        -3.674435,
+        -4.795074,
+        -4.125036
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Canadian_professional_wrestler_Luna_Vachon_dies_aged_48",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "passage": "A",
+      "passage_mean_logp": [
+        -0.488015,
+        -2.253245,
+        -3.027217,
+        -0.973283
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.033657,
+        -4.600749,
+        -4.089158,
+        -6.911617
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Travellers%27_diarrhea",
+      "question_number": 2,
+      "language": "en",
+      "gold": "B",
+      "passage": "D",
+      "passage_mean_logp": [
+        -1.618334,
+        -2.035271,
+        -2.563589,
+        -0.415214
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.657341,
+        -4.223251,
+        -3.735449,
+        -4.607399
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Travellers%27_diarrhea",
+      "question_number": 2,
+      "language": "it",
+      "gold": "B",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.051718,
+        -1.553051,
+        -4.01405,
+        -4.25196
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -7.594139,
+        -7.87945,
+        -6.064941,
+        -6.360082
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Travellers%27_diarrhea",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "B",
+      "passage": "D",
+      "passage_mean_logp": [
+        -1.372111,
+        -3.641736,
+        -3.135131,
+        -0.87254
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.630213,
+        -8.517652,
+        -5.173291,
+        -4.996669
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Investigation_of_Deutsche_Bank_headquarters_spills_into_second_day",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "passage": "C",
+      "passage_mean_logp": [
+        -2.010336,
+        -4.572094,
+        -0.659196,
+        -4.065487
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -6.752347,
+        -5.544681,
+        -4.49535,
+        -4.822311
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Investigation_of_Deutsche_Bank_headquarters_spills_into_second_day",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "passage": "C",
+      "passage_mean_logp": [
+        -3.441935,
+        -4.371694,
+        -0.942218,
+        -7.394595
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -7.978093,
+        -4.187041,
+        -3.988968,
+        -8.477612
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Investigation_of_Deutsche_Bank_headquarters_spills_into_second_day",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.16791,
+        -9.901743,
+        -2.094902,
+        -5.333175
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -6.175046,
+        -12.971457,
+        -5.31425,
+        -7.289735
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:How_Things_Work/Flush_Toilet",
+      "question_number": 2,
+      "language": "en",
+      "gold": "A",
+      "passage": "A",
+      "passage_mean_logp": [
+        -0.675903,
+        -0.927832,
+        -3.284805,
+        -3.963398
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -5.636561,
+        -3.63503,
+        -4.601746,
+        -4.561805
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:How_Things_Work/Flush_Toilet",
+      "question_number": 2,
+      "language": "it",
+      "gold": "A",
+      "passage": "B",
+      "passage_mean_logp": [
+        -1.408742,
+        -0.903378,
+        -3.14527,
+        -5.935883
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -5.448006,
+        -3.935337,
+        -9.268637,
+        -9.122334
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:How_Things_Work/Flush_Toilet",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "A",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.475831,
+        -1.545299,
+        -4.311142,
+        -8.255796
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -6.078096,
+        -4.170488,
+        -5.765902,
+        -6.358866
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Roman_Culture/Medicine",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "passage": "B",
+      "passage_mean_logp": [
+        -3.198019,
+        -2.149081,
+        -3.504644,
+        -3.524918
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -3.257212,
+        -5.317727,
+        -5.149463,
+        -4.904866
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Roman_Culture/Medicine",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "passage": "D",
+      "passage_mean_logp": [
+        -4.403784,
+        -3.191216,
+        -2.916451,
+        -2.471977
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.53628,
+        -6.20407,
+        -6.670097,
+        -6.266335
+      ]
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Roman_Culture/Medicine",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "passage": "C",
+      "passage_mean_logp": [
+        -3.243086,
+        -2.931484,
+        -2.475149,
+        -3.063029
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.444565,
+        -5.884428,
+        -5.202422,
+        -4.670601
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Tourist_plane_crash_in_Papua_New_Guinea_leaves_thirteen_dead",
+      "question_number": 2,
+      "language": "en",
+      "gold": "D",
+      "passage": "B",
+      "passage_mean_logp": [
+        -3.039177,
+        -2.298439,
+        -3.960306,
+        -4.360066
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -3.296451,
+        -2.790536,
+        -5.479063,
+        -5.123268
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Tourist_plane_crash_in_Papua_New_Guinea_leaves_thirteen_dead",
+      "question_number": 2,
+      "language": "it",
+      "gold": "D",
+      "passage": "A",
+      "passage_mean_logp": [
+        -3.226075,
+        -6.187781,
+        -5.233124,
+        -6.191935
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -5.386295,
+        -6.300629,
+        -6.703404,
+        -6.030456
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Tourist_plane_crash_in_Papua_New_Guinea_leaves_thirteen_dead",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "D",
+      "passage": "B",
+      "passage_mean_logp": [
+        -4.711545,
+        -3.6611,
+        -4.964866,
+        -4.078524
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -4.884399,
+        -3.477741,
+        -6.845664,
+        -4.802417
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Antarctica",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "passage": "C",
+      "passage_mean_logp": [
+        -4.784198,
+        -4.657228,
+        -3.59533,
+        -4.433105
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -3.959999,
+        -5.64319,
+        -3.411227,
+        -4.593842
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Antarctica",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "passage": "B",
+      "passage_mean_logp": [
+        -5.316781,
+        -4.953785,
+        -6.199543,
+        -7.631523
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.76006,
+        -5.665597,
+        -6.179357,
+        -8.28623
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Antarctica",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "passage": "C",
+      "passage_mean_logp": [
+        -5.784786,
+        -5.484731,
+        -4.77003,
+        -9.207873
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -6.366183,
+        -8.259967,
+        -6.512993,
+        -7.221423
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Japan%27s_Top_100_Cherry_Blossom_Spots",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "passage": "D",
+      "passage_mean_logp": [
+        -1.685757,
+        -3.416033,
+        -1.93223,
+        -1.013257
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -3.558186,
+        -5.016813,
+        -5.583516,
+        -3.919215
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Japan%27s_Top_100_Cherry_Blossom_Spots",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.450565,
+        -3.142491,
+        -2.483427,
+        -2.469496
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -6.582462,
+        -6.476852,
+        -6.762113,
+        -5.495748
+      ]
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Japan%27s_Top_100_Cherry_Blossom_Spots",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "passage": "A",
+      "passage_mean_logp": [
+        -1.052055,
+        -5.466856,
+        -2.178048,
+        -1.760196
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -2.666931,
+        -7.11748,
+        -4.360234,
+        -4.997619
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Hard_drugs_temporarily_legal_in_Ireland_due_to_constitutional_loophole",
+      "question_number": 2,
+      "language": "en",
+      "gold": "D",
+      "passage": "D",
+      "passage_mean_logp": [
+        -3.635148,
+        -5.949118,
+        -3.804984,
+        -3.505495
+      ],
+      "question_only": "C",
+      "question_only_mean_logp": [
+        -4.083634,
+        -6.148905,
+        -3.943179,
+        -6.049853
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Hard_drugs_temporarily_legal_in_Ireland_due_to_constitutional_loophole",
+      "question_number": 2,
+      "language": "it",
+      "gold": "D",
+      "passage": "D",
+      "passage_mean_logp": [
+        -8.131956,
+        -9.054448,
+        -7.929025,
+        -7.542496
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -8.836447,
+        -7.371223,
+        -8.924312,
+        -8.289973
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Hard_drugs_temporarily_legal_in_Ireland_due_to_constitutional_loophole",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "D",
+      "passage": "A",
+      "passage_mean_logp": [
+        -3.261627,
+        -3.269715,
+        -11.802393,
+        -4.826066
+      ],
+      "question_only": "B",
+      "question_only_mean_logp": [
+        -3.720315,
+        -3.066384,
+        -12.438461,
+        -7.313979
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Wikimedia_Foundation_addresses_controversial_content_conflict",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "passage": "A",
+      "passage_mean_logp": [
+        -2.612617,
+        -5.639955,
+        -4.377801,
+        -3.858566
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -4.916357,
+        -7.039154,
+        -5.367318,
+        -5.318956
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Wikimedia_Foundation_addresses_controversial_content_conflict",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "passage": "B",
+      "passage_mean_logp": [
+        -3.719589,
+        -3.58151,
+        -6.804224,
+        -4.278303
+      ],
+      "question_only": "D",
+      "question_only_mean_logp": [
+        -5.362367,
+        -5.246907,
+        -6.963892,
+        -5.178105
+      ]
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Wikimedia_Foundation_addresses_controversial_content_conflict",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "passage": "D",
+      "passage_mean_logp": [
+        -5.36951,
+        -5.053293,
+        -5.357979,
+        -4.965333
+      ],
+      "question_only": "A",
+      "question_only_mean_logp": [
+        -6.765675,
+        -7.293955,
+        -6.988113,
+        -7.206081
+      ]
+    }
+  ]
+}

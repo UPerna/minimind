@@ -94,7 +94,7 @@ def summarize(reports, output):
     with (output / "predictions.csv").open("w", newline="", encoding="utf-8") as target:
         writer = csv.writer(target, lineterminator="\n")
         columns = ["split", "case", "pair", "category", "language", "prompt", "expected"]
-        writer.writerow(columns + [f"{name}_{column}" for name in MODELS for column in ("answer", "correct", "stop", "tokens")])
+        writer.writerow(columns + [f"{name}_{column}" for name in MODELS for column in ("answer_json", "correct", "stop", "tokens")])
         for case in cases:
             for lang, prompt in case["prompts"].items():
                 answer = case.get("number")
@@ -104,7 +104,7 @@ def summarize(reports, output):
                 values = [case["split"], case["id"], case.get("pair", ""), case["category"], lang, prompt, answer]
                 for name in MODELS:
                     r = raw[name][(case["id"], lang)]
-                    values.extend([r["answer"], int(r["correct"]), r["stop"], r["generated_tokens"]])
+                    values.extend([json.dumps(r["answer"], ensure_ascii=False), int(r["correct"]), r["stop"], r["generated_tokens"]])
                 writer.writerow(values)
     (output / "results.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

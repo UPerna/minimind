@@ -38,6 +38,8 @@ The recipe creates 30 training questions in three languages and calls the fork�
 
 ## Next experiments
 
+The [matched training comparison](grounded-curriculum.md) now tests broader examples, changed input values and reading transfer against the original model and a repetition control.
+
 1. **Increase answer accuracy.** Compare the base, this pilot, and a candidate trained on a broader, deduplicated English–Italian–Chinese corpus with verified facts, arithmetic answers and source passages. Before training, freeze a separate set of unseen facts, values and document templates. Use questions with longer answers too, and score correctness separately from formatting.
 2. **Check what the model retains.** Measure Chinese conversation and tool-call validity alongside English and Italian. Compare candidates on the same items and report paired gains and losses. Keep translated variants together when estimating uncertainty. Evaluate the chosen candidate once on a fresh holdout.
 3. **Measure the deployment cost.** Compare the selected candidate on CPU, Apple Silicon and a CUDA device using the same prompt lengths and output limits. Record time to first token, generated tokens per second, peak memory and any changes to the answers after quantization. Run distributed and mixed-precision training checks before recommending a recipe for multiple GPUs.
