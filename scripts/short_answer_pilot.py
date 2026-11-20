@@ -56,7 +56,7 @@ def training_rows():
                                  f"把{a}除以{b}。只写数字。"), str(a // b))
 
 
-def run(base, parent, device, threads):
+def run(base, parent, device, threads, *, train_file=None, max_seq_len=96):
     tokenizer = AutoTokenizer.from_pretrained(base, local_files_only=True)
     hf = AutoModelForCausalLM.from_pretrained(base, local_files_only=True, dtype=torch.float16)
     if hf.config.model_type != "qwen3":
@@ -71,11 +71,14 @@ def run(base, parent, device, threads):
     tokenizer.save_pretrained(work / "model")
     torch.save(hf.state_dict(), work / "out/full_sft_768.pth")
     data = work / "train.jsonl"
-    data.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in training_rows()), encoding="utf-8")
+    if train_file is None:
+        data.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in training_rows()), encoding="utf-8")
+    else:
+        data.write_bytes(train_file.read_bytes())
     command = [sys.executable, str(ROOT / "trainer/train_lora.py"), "--device", device,
                "--data_path", str(data), "--from_weight", "full_sft", "--lora_name", "short_answer",
                "--lora_rank", "8", "--lora_alpha", "16", "--epochs", "3", "--batch_size", "4",
-               "--max_seq_len", "96", "--learning_rate", "0.001", "--num_workers", "0",
+               "--max_seq_len", str(max_seq_len), "--learning_rate", "0.001", "--num_workers", "0",
                "--log_interval", "10", "--save_interval", "10000"]
     env = dict(os.environ, OMP_NUM_THREADS=str(threads), MKL_NUM_THREADS=str(threads))
     subprocess.run(command, cwd=work / "trainer", env=env, check=True)
@@ -88,6 +91,7 @@ def run(base, parent, device, threads):
     tokenizer.save_pretrained(export)
     repair_generation_config(export)
     print(f"Adapter: {work / 'out/short_answer_768.pth'}\nTransformers export: {export}", flush=True)
+    return export
 
 
 if __name__ == "__main__":
@@ -96,8 +100,10 @@ if __name__ == "__main__":
     parser.add_argument("--work-dir", required=True, type=Path, help="Parent directory for a new experiment")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--threads", type=int, default=4)
+    parser.add_argument("--train-file", type=Path, help="Optional chat-format JSONL curriculum")
+    parser.add_argument("--max-seq-len", type=int, default=96)
     args = parser.parse_args()
-    if args.threads < 1:
-        parser.error("--threads must be positive")
+    if args.threads < 1 or args.max_seq_len < 2:
+        parser.error("--threads must be positive and --max-seq-len must be at least two")
     torch.set_num_threads(args.threads)
-    run(args.base, args.work_dir, args.device, args.threads)
+    run(args.base, args.work_dir, args.device, args.threads, train_file=args.train_file, max_seq_len=args.max_seq_len)
