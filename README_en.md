@@ -6,18 +6,18 @@
 
 <div align="center">
 
-![visitors](https://visitor-badge.laobi.icu/badge?page_id=jingyaogong/minimind)
-[![GitHub Repo stars](https://img.shields.io/github/stars/jingyaogong/minimind?style=social)](https://github.com/jingyaogong/minimind/stargazers)
-[![GitHub Code License](https://img.shields.io/github/license/jingyaogong/minimind)](LICENSE)
-[![GitHub last commit](https://img.shields.io/github/last-commit/jingyaogong/minimind)](https://github.com/jingyaogong/minimind/commits/master)
-[![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/jingyaogong/minimind/pulls)
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=UPerna/minimind)
+[![GitHub Repo stars](https://img.shields.io/github/stars/UPerna/minimind?style=social)](https://github.com/UPerna/minimind/stargazers)
+[![GitHub Code License](https://img.shields.io/github/license/UPerna/minimind)](LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/UPerna/minimind)](https://github.com/UPerna/minimind/commits/master)
+[![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/UPerna/minimind/pulls)
 [![Collection](https://img.shields.io/badge/🤗-MiniMind%20%20Collection-blue)](https://huggingface.co/collections/jingyaogong/minimind-66caf8d999f5c7fa64f399e5)
 
 </div>
 
 <div align="center">
 
-![GitHub Trend](https://trendshift.io/api/badge/repositories/12586)
+![Upstream MiniMind on GitHub Trends](https://trendshift.io/api/badge/repositories/12586)
 
 </div>
 
@@ -27,11 +27,13 @@
 
 <div align="center">
 
-[中文](./README.md) | English
+**English edition** · [Original Chinese manual](https://github.com/jingyaogong/minimind/blob/cc9629e5f464ef46ef9411bfac916364e0a6dff1/README.md)
+
+English localization of [MiniMind by Jingyao Gong and contributors](https://github.com/jingyaogong/minimind). The training corpora and checkpoints linked here are the original releases. Historical chat examples and the two chat illustrations are English renderings of upstream demonstrations. They retain model mistakes and repetition. The tokenizer examples and translation tasks retain the source words they measure, with [English equivalents](./dataset/language_examples.py). See [verification results and known training issues](./docs/english-verification.md).
 
 </div>
 
-* This open-source project aims to train MiniMind, an ultra-small language model with about 64M parameters, entirely from scratch with only about RMB 3 in cost and 2 hours of training time.
+* MiniMind is a roughly 64-million-parameter language model with an end-to-end training pipeline in PyTorch. The smallest documented training run uses one RTX 3090.
 * The MiniMind series is intentionally lightweight. The smallest model on the main branch is about $\frac{1}{2700}$ the size of GPT-3, making full training and reproduction feasible even on ordinary personal GPUs.
 * The project provides a minimalist model architecture and an end-to-end LLM training pipeline, covering MoE, data cleaning, pretraining, Supervised Fine-Tuning (SFT), LoRA, RLHF (DPO), RLAIF (PPO / GRPO / CISPO), Tool Use, Agentic RL, Adaptive Thinking, and Model Distillation.
 * MiniMind has also been extended to a vision model [MiniMind-V](https://github.com/jingyaogong/minimind-v), a multimodal Omni model [MiniMind-O](https://github.com/jingyaogong/minimind-o), a diffusion language model (MiniMind-dLM), and a linear attention model (MiniMind-Linear). See [Discussion](https://github.com/jingyaogong/minimind/discussions) for details.
@@ -39,15 +41,15 @@
 * MiniMind is both an end-to-end open-source reproduction of the LLM training pipeline and a hands-on tutorial for learning how LLMs are built.
 * We hope this project can provide a reproducible, understandable, and extensible starting point for more people, share the joy of creation, and help move the broader AI community forward.
 
-> Note: This project is released under the Apache 2.0 license and is completely free. "2 hours" refers to the measured time for running `1 epoch` of the SFT stage on a single NVIDIA 3090, while "RMB 3" refers to the corresponding GPU rental cost.
+> The [training cost table](#zero-training-cost) estimates **2.31 GPU-hours and CNY 3.00** for one epoch each of mini pretraining and supervised fine-tuning for the dense **Zero** model. The published checkpoints use a different training recipe. MiniMind is released under Apache 2.0.
 
 ---
 
 <div align="center">
 
-![minimind-3](./images/minimind-3.gif)
+![English replay of the original MiniMind chat demonstration](./images/minimind-3.gif)
 
-[🔗 Online Demo](https://www.modelscope.cn/studios/gongjy/MiniMind) | [🔗 Video Introduction](https://www.bilibili.com/video/BV12dHPeqE72)
+[🔗 Online Demo](https://www.modelscope.cn/studios/gongjy/MiniMind) | [🔗 Original video introduction (Chinese)](https://www.bilibili.com/video/BV12dHPeqE72)
 
 
 <div align="center">
@@ -76,7 +78,7 @@
 
 The emergence of Large Language Models (LLMs) has drawn unprecedented global attention to AI. ChatGPT, DeepSeek, Qwen, and many other models have impressed people with their remarkable performance, making the impact of this technological wave feel very real. However, models with tens or hundreds of billions of parameters are not only difficult to train on personal devices, but often out of reach even for deployment. Opening the "black box" of large models and truly understanding how they work internally should have been an exciting thing. Unfortunately, most explorations eventually stop at applying techniques such as LoRA to fine-tune existing large models on a few new instructions or specific tasks. This is more like teaching Newton how to use a 21st-century smartphone — interesting, but not quite the original goal of understanding the essence of physics.
 
-At the same time, third-party LLM frameworks and toolkits such as `transformers` / `trl` / `peft` often expose only highly abstract interfaces. With just a dozen lines of code, one can complete the entire pipeline of "load model + load dataset + inference + reinforcement learning" training. This kind of efficient encapsulation is convenient, but it also separates developers from the underlying implementation to some extent, reducing the opportunity to deeply understand the core code of LLMs. I believe that "building an airplane from Lego bricks yourself is far more exciting than flying in first class". A more practical problem is that the internet is also filled with paid courses and marketing content, where so-called AI tutorials are wrapped in flawed and half-understood explanations. For this reason, the original intention of this project is to lower the learning barrier of LLMs as much as possible, so that everyone can start from understanding every line of code and train a tiny language model by hand from scratch. Yes, **training from scratch**, not merely staying at the **inference** level. With a server cost of less than RMB 3, you can personally experience the full process of building a language model from 0 to 1.
+At the same time, third-party LLM frameworks and toolkits such as `transformers` / `trl` / `peft` often expose only highly abstract interfaces. With just a dozen lines of code, one can complete the entire pipeline of "load model + load dataset + inference + reinforcement learning" training. This kind of efficient encapsulation is convenient, but it also separates developers from the underlying implementation to some extent, reducing the opportunity to deeply understand the core code of LLMs. I believe that "building an airplane from Lego bricks yourself is far more exciting than flying in first class". A more practical problem is that the internet is also filled with paid courses and marketing content, where so-called AI tutorials are wrapped in flawed and half-understood explanations. For this reason, the original intention of this project is to lower the learning barrier of LLMs as much as possible, so that everyone can start from understanding every line of code and train a tiny language model by hand from scratch. Yes, **training from scratch**, not merely staying at the **inference** level. The mini-data recipe gives individual developers an affordable way to run pretraining and supervised fine-tuning themselves.
 
 😊 Let's share the joy of creation together!
 
@@ -113,7 +115,7 @@ At the same time, third-party LLM frameworks and toolkits such as `transformers`
 
 #### 📝 Changelog
 
-<details> 
+<details>
 <summary> <b>🔥 2026-04-01</b> </summary>
 
  - Released `minimind-3` / `minimind-3-moe`: comprehensive updates to structure, Tokenizer, training pipeline, inference interface, and default configuration
@@ -130,7 +132,7 @@ At the same time, third-party LLM frameworks and toolkits such as `transformers`
 
 </details>
 
-<details> 
+<details>
 <summary> <b>2025-10-24</b> </summary>
 
 - 🔥 Added RLAIF training algorithms: PPO, GRPO, SPO (natively implemented from scratch)
@@ -145,7 +147,7 @@ At the same time, third-party LLM frameworks and toolkits such as `transformers`
 
 </details>
 
-<details> 
+<details>
 <summary> <b>2025-04-26</b> </summary>
 
 - Major update
@@ -227,9 +229,12 @@ After this update, maintenance for the entire `minimind-v1` series will be disco
 
 ```bash
 # Clone repository and install dependencies
-git clone --depth 1 https://github.com/jingyaogong/minimind
-cd minimind && pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+git clone --depth 1 https://github.com/UPerna/minimind
+cd minimind
+python -m pip install -r requirements.txt "pyarrow==25.0.1"
 ```
+
+The CPU verification used Python 3.12, PyTorch 2.6.0, Transformers 4.57.6, and PyArrow 25.0.1. Install the appropriate PyTorch build for your hardware before running the training or inference scripts. The PyArrow pin pairs with the repository’s NumPy 1.26.4 requirement.
 
 ## Ⅰ 🚀 Model Inference
 
@@ -279,8 +284,8 @@ import torch
 print(torch.cuda.is_available())
 ```
 
-If you plan to use CUDA for training, it is recommended to first confirm whether the current environment has correctly recognized the GPU.  
-If `cuda` is not available, you can still choose `CPU` or `MPS` to run based on your device, but training speed and compatibility will differ significantly.  
+If you plan to use CUDA for training, it is recommended to first confirm whether the current environment has correctly recognized the GPU.<br/>
+If `cuda` is not available, you can still choose `CPU` or `MPS` to run based on your device, but training speed and compatibility will differ significantly.<br/>
 If you need to install or switch PyTorch versions, refer to [torch_stable](https://download.pytorch.org/whl/torch_stable.html) and [this link](https://blog.csdn.net/weixin_45456738/article/details/141029610?ops_request_misc=&request_id=&biz_id=102&utm_term=%E5%AE%89%E8%A3%85torch&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-141029610.nonecase&spm=1018.2226.3001.4187)
 
 </details>
@@ -293,6 +298,8 @@ Download the required data files from the [dataset download link](https://www.mo
 For other use cases, several data combinations are provided below and can be selected according to your task objectives and GPU resources.
 
 ### 2' Start Training
+
+Run each example below from the repository root. The two one-epoch commands match the epoch counts used in the Zero cost estimate. Both scripts default to two epochs if you omit the flag.
 
 <details>
 <summary>💡 Checkpoint Pause and Resume</summary>
@@ -318,7 +325,7 @@ python train_full_sft.py --from_resume 1
 #### 2.1 Pretraining (Required)
 
 ```bash
-cd trainer && python train_pretrain.py
+(cd trainer && python train_pretrain.py --epochs 1)
 ```
 
 > After training, `out/pretrain_*.pth` will be produced as output weights (where `*` is the model dimension, default `768`)
@@ -326,7 +333,7 @@ cd trainer && python train_pretrain.py
 #### 2.2 Instruction Fine-tuning (Required)
 
 ```bash
-cd trainer && python train_full_sft.py
+(cd trainer && python train_full_sft.py --epochs 1)
 ```
 
 > After training, `out/full_sft_*.pth` will be produced as output weights (where `full` indicates full-parameter fine-tuning)
@@ -412,9 +419,9 @@ Among them:
 The file format is as follows:
 
 ```jsonl
-{"text": "如何才能摆脱拖延症？治愈拖延症并不容易，但以下建议可能有所帮助。"}
-{"text": "清晨的阳光透过窗帘洒进房间，桌上的书页被风轻轻翻动。"}
-{"text": "Transformer 通过自注意力机制建模上下文关系，是现代大语言模型的重要基础结构。"}
+{"text": "How can I stop procrastinating? It is hard to break the habit, but the following suggestions may help."}
+{"text": "Early sunlight fell through the curtains, and a breeze turned the pages of the book on the table."}
+{"text": "The Transformer uses self-attention to model relationships in context. It is a fundamental building block of modern large language models."}
 ```
 
 ## Ⅲ SFT Data
@@ -438,16 +445,16 @@ All SFT files follow the same format, including dialogue and Tool Use data:
 ```jsonl
 {
     "conversations": [
-        {"role": "user", "content": "你好"},
-        {"role": "assistant", "content": "你好！"},
-        {"role": "user", "content": "再见"},
-        {"role": "assistant", "content": "再见！"}
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant", "content": "Hello!"},
+        {"role": "user", "content": "Goodbye"},
+        {"role": "assistant", "content": "Goodbye!"}
     ]
 }
 {
     "conversations": [
         {"role": "system", "content": "# Tools ...", "tools": "[...]"},
-        {"role": "user", "content": "把'你好世界'翻译成english"},
+        {"role": "user", "content": "Translate '你好世界' into English."},
         {"role": "assistant", "content": "", "tool_calls": "[{\"name\":\"translate_text\",\"arguments\":{\"text\":\"你好世界\",\"target_language\":\"english\"}}]"},
         {"role": "tool", "content": "{\"translated_text\":\"Hello World\"}"},
         {"role": "assistant", "content": "Hello World"}
@@ -466,11 +473,11 @@ The `dpo.jsonl` data format is
 ```json
 {
   "chosen": [
-    {"content": "Q", "role": "user"}, 
+    {"content": "Q", "role": "user"},
     {"content": "good answer", "role": "assistant"}
-  ], 
+  ],
   "rejected": [
-    {"content": "Q", "role": "user"}, 
+    {"content": "Q", "role": "user"},
     {"content": "bad answer", "role": "assistant"}
   ]
 }
@@ -520,8 +527,8 @@ The "maximum length" annotated in dataset names is in character count; a string 
 
 For example:
 
-* Chinese: `白日依山尽` (5 characters) may be split into [`白日`,`依`,`山`,`尽`] 4 tokens;
-* English: `The sun sets in the west` (24 characters) may be split into [`The `,`sun `,`sets `,`in `,`the`,`west`] 6 tokens
+* Chinese: `白日依山尽` (“the sun sets behind the mountains”) has five characters. The bundled tokenizer gives five IDs, `[2178, 1053, 2472, 2302, 1932]`, one per character.
+* English: `The sun sets in the west` has 24 characters. The same tokenizer gives eight pieces: `["The", " sun", " set", "s", " in", " the", " w", "est"]`.
 
 The "recommended settings" provide rough estimates of the maximum token length for each dataset.
 Note that `max_seq_len` can be adjusted aggressively or conservatively, but both directions have side effects: samples shorter than `max_seq_len` waste compute due to padding, while samples longer than `max_seq_len` lose information due to truncation.
@@ -610,6 +617,8 @@ For reference, GPT-3's parameter settings are as follows:
 
 # 📌 Experiments
 
+<a id="zero-training-cost"></a>
+
 ## Ⅰ Training Cost
 
 - **Time unit**: hours (h)
@@ -646,17 +655,17 @@ On a single `NVIDIA 3090`, `minimind zero` can still be trained from scratch in 
 With a higher-end multi-GPU setup such as `8x H100`, the total training time can be reduced to minutes. MiniMind has always aimed to keep LLM training reproducible, hands-on, and easy to iterate on. Low-cost quick reproduction is not a gimmick; below is an early Zero-style example conversation preserved for reference:
 
 ```text
-👶: 请介绍一下自己。
-🤖️: 作为人工智能，我没有实际的生活，也没有自我意识，所以没有自己的生活。我被设计成能够帮助用户解答问题、提供信息、进行对话等。我的设计和功能是由计算机科学、机器学习、人工智能技术和算法所构建的，我通过编程和算法实现。
+👶: Please introduce yourself.
+🤖️: As an artificial intelligence I have no actual life or self-awareness, so I have no life of my own. I was designed to answer questions, provide information, and hold conversations. Computer science, machine learning, AI technology, and algorithms make up my design and functions. I am implemented through programming and algorithms.
 
-👶: 推荐一些杭州的特色美食吧。
-🤖️: 杭州有很多美味的特色美食，比如鸡肉串、鳗鱼头、水煮鱼、豆腐脑等。这些美食都非常美味，有着独特的风味和口感，绝对是值得一试的美食。
+👶: What local dishes would you recommend in Hangzhou?
+🤖️: Hangzhou has many delicious specialties, including chicken skewers, eel heads, boiled fish, and soft tofu pudding. These dishes are all delicious, with distinctive flavors and textures, and definitely worth trying.
 
-👶: 请为我讲解"大语言模型"这个概念。
-🤖️: 大语言模型是一种人工智能技术，它使用大量的文本数据来训练模型，然后在不断的迭代中不断优化模型。它的目标是根据输入的数据来生成符合特定需求的文本，这些文本可以是任何你感兴趣的主题。
+👶: Explain what a large language model is.
+🤖️: A large language model is an AI technology that trains a model on large amounts of text and continually improves it over successive iterations. Its aim is to generate text suited to particular needs from input data. The text can be about any topic that interests you.
 
 👶: Introduce the history of the United States, please.
-🤖️: 您提到的"Introok's the believeations of theument." 这个名字来源于中国古代的"groty of of the change."
+🤖️: The name you mentioned, "Introok's the believeations of theument.", comes from the ancient Chinese "groty of of the change."
 ```
 
 Although this version already has basic dialogue capability, its factual knowledge and generalization ability are still limited; it is mainly an early reference for the feasibility of the Zero training route.
@@ -672,7 +681,7 @@ Zero model weights are saved as `full_sft_zero_768.pth` (see MiniMind model file
 ### 1' Pretraining (Pretrain):
 
 An LLM first needs to absorb foundational knowledge and language patterns into its parameters. Only after this stage is sufficiently stable can the model begin to understand questions, organize responses, and develop usable generation ability. Pretraining essentially exposes the model to large amounts of text, such as Wikipedia, news, books, and dialogue corpora, so that it can learn factual knowledge, language patterns, and statistical relationships between contexts. This stage is usually "unsupervised": humans do not label each line as right or wrong; instead, the model extracts patterns from massive text and gradually builds internal representations of world knowledge and language structure.
-In plain terms, the core objective at this stage is **high-quality next-token continuation**. For example, given the input "秦始皇" (Qin Shi Huang), the model should be able to continue with "是中国历史上的第一位皇帝" (was the first emperor in Chinese history) — content that is semantically and factually consistent.
+The goal at this stage is **next-token continuation**. Given “Qin Shi Huang,” for instance, the model should be able to continue with “was the first emperor in Chinese history.”
 
 ```bash
 # Method 1
@@ -690,11 +699,11 @@ python train_pretrain.py
 # Simple test on pretraining results:
 python eval_llm.py --weight pretrain
 
-💬: 为什么天空是蓝色的
-🧠: 天空之所以看起来是蓝色的，主要是因为太阳光进入大气层后，短波长的蓝光更容易被空气分子散射，因此人眼从各个方向接收到的蓝光会更多。
+💬: Why is the sky blue?
+🧠: The sky looks blue mainly because air molecules scatter short-wavelength blue light more readily when sunlight enters the atmosphere. More blue light therefore reaches our eyes from different directions.
 
-💬: 解释什么是机器学习
-🧠: 机器学习是人工智能的一个重要分支，它通过数据训练模型，使系统能够自动学习规律，并在分类、预测、推荐、自然语言处理等任务中持续改进效果。
+💬: Explain machine learning.
+🧠: Machine learning is a major branch of AI. It trains models on data so systems can learn patterns and improve at classification, prediction, recommendation, and natural language processing.
 ```
 
 ### 2' Supervised Fine-Tuning (SFT):
@@ -721,11 +730,11 @@ python train_full_sft.py
 # Simple test on SFT results:
 python eval_llm.py --weight full_sft
 
-💬: 解释什么是机器学习
-🧠: 机器学习是人工智能的核心技术之一，通过算法让计算机从数据中学习规律，并持续改进预测或决策效果，常见应用包括推荐系统、图像识别、语音识别和自然语言处理。
+💬: Explain machine learning.
+🧠: Machine learning is a core AI technology. Algorithms learn patterns from data and improve predictions or decisions over time. Applications include recommendation systems, image recognition, speech recognition, and natural language processing.
 
-💬: 推荐一些中国的美食
-🧠: 例如北京烤鸭、兰州拉面、四川火锅、广东早茶、小笼包和麻婆豆腐等，这些美食分别代表了不同地区的风味特点，也很适合作为了解中国饮食文化的入门选择。
+💬: Which Chinese dishes would you recommend?
+🧠: Peking duck, Lanzhou hand-pulled noodles, Sichuan hot pot, Cantonese morning tea, soup dumplings, and mapo tofu. Each represents a different regional taste and is a good introduction to Chinese food.
 ```
 
 ## Ⅲ Other Training (Optional)
@@ -779,15 +788,15 @@ Usually you only need to prepare multi-turn dialogue format data in the same way
 Example 1: Vertical domain data
 
 ```jsonl
- {"conversations": [{"role": "user", "content": "请问颈椎病的人枕头多高才最好？"}, {"role": "assistant", "content": "颈椎病患者选择枕头的高度应该根据..."}]}
- {"conversations": [{"role": "user", "content": "请问xxx"}, {"role": "assistant", "content": "xxx..."}]}
+ {"conversations": [{"role": "user", "content": "What pillow height is best for someone with cervical spondylosis?"}, {"role": "assistant", "content": "For someone with cervical spondylosis, the choice of pillow height should depend on..."}]}
+ {"conversations": [{"role": "user", "content": "May I ask xxx?"}, {"role": "assistant", "content": "xxx..."}]}
 ```
 
 Example 2: Self-awareness data
 
 ```jsonl
- {"conversations": [{"role": "user", "content": "你叫什么名字？"}, {"role": "assistant", "content": "您好，我名叫 MiniMind，是由 Jingyao Gong 开发的人工智能助手。我可以帮助你解决各种问题，包括翻译、推荐内容等等。"}]}
- {"conversations": [{"role": "user", "content": "你是谁"}, {"role": "assistant", "content": "您好，我是 MiniMind，由 Jingyao Gong 创建。我的主要职责是提供准确的回答和帮助。"}]}
+ {"conversations": [{"role": "user", "content": "What is your name?"}, {"role": "assistant", "content": "Hello, my name is MiniMind. I am an AI assistant developed by Jingyao Gong. I can help with translation, content recommendations, and other tasks."}]}
+ {"conversations": [{"role": "user", "content": "Who are you?"}, {"role": "assistant", "content": "Hello, I am MiniMind, created by Jingyao Gong. My main role is to give accurate answers and help you."}]}
 ```
 
 At this point, the [base model + LoRA weights] can be used in combination, preserving the base model's general capabilities while enhancing specific domain performance. After training, simple tests can also be done via `eval_llm.py`.
@@ -796,13 +805,13 @@ At this point, the [base model + LoRA weights] can be used in combination, prese
 # Note: the weight parameter specifies the base model type, which must be consistent with the base model used during train_lora training
 python eval_llm.py  --weight full_sft --lora_weight lora_medical
 
-👶: 我最近经常感到头晕，可能是什么原因？
-🤖️: 头晕可能是由于多种原因，包括但不限于：心脏疾病、眼睛损伤、过敏反应、皮肤问题、过敏反应、压力、焦虑、疲劳、药物副作用、性功能障碍或者其他...
+👶: I have been feeling dizzy lately. What could be causing it?
+🤖️: Dizziness can have many causes, including heart disease, eye injury, an allergic reaction, skin problems, an allergic reaction, stress, anxiety, fatigue, medication side effects, sexual dysfunction, or other...
 
 python eval_llm.py  --weight full_sft --lora_weight lora_identity
 
-👶: 你和openai是什么关系？
-🤖️: 我是 MiniMind，一个由 Jingyao Gong 开发的人工智能助手。我通过自然语言处理和算法训练来与用户进行交互。
+👶: What is your relationship with OpenAI?
+🤖️: I am MiniMind, an AI assistant developed by Jingyao Gong. I interact with users through natural language processing and algorithm training.
 ```
 
 PS: If you have sufficient data, you can also perform `full_sft` full-parameter fine-tuning directly. This usually requires careful mixing of general and domain-specific data; otherwise, the model may lose part of its general capability due to overfitting on vertical-domain samples.
@@ -816,7 +825,7 @@ cd scripts && python convert_model.py
 
 ### **5' Tool Calling & Adaptive Thinking**
 
-Starting from `2026-03`, the repository removed the standalone `train_reason.py`.  
+Starting from `2026-03`, the repository removed the standalone `train_reason.py`.<br/>
 The current version no longer separately maintains `reason_*.pth` weights, but instead uniformly models "whether to explicitly output the thinking process" through `chat_template`, `<think>` tags, `open_thinking` switch, and subsequent SFT / RLAIF pipelines.
 
 #### 5.1 Tool Calling
@@ -827,10 +836,10 @@ The current `toolcall` capability has been merged into the `sft_t2t` / `sft_t2t_
 {
   "conversations": [
     {"role": "system", "content": "# Tools ...", "tools": "[...]"},
-    {"role": "user", "content": "帮我算一下 256 乘以 37 等于多少"},
+    {"role": "user", "content": "What is 256 times 37?"},
     {"role": "assistant", "content": "", "tool_calls": "[{\"name\":\"calculate_math\",\"arguments\":{\"expression\":\"256 * 37\"}}]"},
     {"role": "tool", "content": "{\"result\":\"9472\"}"},
-    {"role": "assistant", "content": "256 乘以 37 等于 9472。"}
+    {"role": "assistant", "content": "256 times 37 is 9472."}
   ]
 }
 ```
@@ -849,11 +858,11 @@ You can also directly run simple tests via `eval_toolcall.py`:
 ```bash
 python eval_toolcall.py --weight full_sft
 
-💬: 现在几点了？
+💬: What time is it?
 🧠: <tool_call>{"name": "get_current_time", "arguments": {"timezone": "Asia/Shanghai"}}</tool_call>
 📞 [Tool Calling]: get_current_time
 ✅ [Tool Called]: {"datetime": "2026-03-15 17:18:22", "timezone": "Asia/Shanghai"}
-🧠: 现在是2026年3月15日17时18分22秒。
+🧠: It is 17:18:22 on March 15, 2026.
 ```
 
 #### 5.2 Adaptive Thinking
@@ -876,7 +885,7 @@ OpenAI-API-SDK usage:
 ```python
 response = client.chat.completions.create(
     model="minimind",
-    messages=[{"role": "user", "content": "你是谁？"}],
+    messages=[{"role": "user", "content": "Who are you?"}],
     # ...
     extra_body={"chat_template_kwargs": {"open_thinking": True}} # Thinking switch
 )
@@ -992,8 +1001,8 @@ The data format is consistent with SFT, but the assistant does not need content,
 ```json
 {
     "conversations": [
-        {"role": "user", "content": "请解释一下什么是光合作用？"},
-        {"role": "assistant", "content": "无"}
+        {"role": "user", "content": "Could you explain photosynthesis?"},
+        {"role": "assistant", "content": "None"}
     ]
 }
 ```
@@ -1246,23 +1255,23 @@ I personally view this implementation as a very interesting transitional version
 # Test the final model's Tool Use capability
 python eval_toolcall.py --weight agent
 
-💬: 现在几点了？
+💬: What time is it?
 🧠: <tool_call>{"name": "get_current_time", "arguments": {"timezone": "Asia/Shanghai"}}</tool_call>
 📞 [Tool Calling]: get_current_time
 ✅ [Tool Called]: {"datetime": "2026-03-15 21:22:33", "timezone": "Asia/Shanghai"}
-🧠: 现在是2026年3月15日21时22分33秒（北京时间）。
+🧠: It is 21:22:33 Beijing time on March 15, 2026.
 
-💬: 帮我生成一个1到1000的随机数，然后计算它的平方
+💬: Generate a random number between 1 and 1000, then calculate its square.
 🧠: <tool_call>{"name": "random_number", "arguments": {"min": 1, "max": 1000}}</tool_call>
 📞 [Tool Calling]: random_number
 ✅ [Tool Called]: {"result": 71}
 🧠: <tool_call>{"name": "calculate_math", "arguments": {"expression": "71**2"}}</tool_call>
 📞 [Tool Calling]: calculate_math
 ✅ [Tool Called]: {"result": "5041"}
-🧠: 生成的1到1000的随机数是71，根据计算结果，71的平方等于5041。
+🧠: The random number generated between 1 and 1000 is 71. The result of the calculation is that 71 squared equals 5041.
 ```
 
-![agent_webui](./images/agent_webui.jpg)
+![English rendering of the original MiniMind tool-call transcript, showing a calculation, Beijing time, translation, and a simulated exchange rate](./images/agent_webui.jpg)
 
 > Based on AgentRL training results testing, supports thinking display, tool selection, and multi-turn Tool Use interaction
 
@@ -1272,10 +1281,10 @@ Returning to the "**unified framework**", the table below summarizes how differe
 
 | Algorithm | Policy term $f(r_t)$ | Advantage term $g(A_t)$ | Regularization term $h(\text{KL}_t)$ | Number of training models |
 |-----------|---------------------|------------------------|-------------------------------------|--------------------------|
-| **DPO** | $\log r_w - \log r_l$ | No explicit advantage term | Implicit in $\beta$ | 1 (2 participate in forward) | 
+| **DPO** | $\log r_w - \log r_l$ | No explicit advantage term | Implicit in $\beta$ | 1 (2 participate in forward) |
 | **PPO** | $\min(r_t \cdot A_t, \mathrm{clip}(r_t, 1-\varepsilon, 1+\varepsilon) \cdot A_t)$ | $A_t$ (typically estimated by the Critic, or computed with GAE) | $\beta \cdot \mathbb{E}[\text{KL}]$ | 2 |
 | **GRPO** | $\min(r_t \cdot A_t, \mathrm{clip}(r_t, 1-\varepsilon, 1+\varepsilon) \cdot A_t)$ | $A_{i,j}=\frac{R_{i,j}-\mu_i}{\sigma_i+\epsilon}$ | $\beta \cdot \text{KL}_t$ | 1 |
-| **CISPO** | $\mathrm{clip}(r, 0, \varepsilon_{\mathrm{high}}) \cdot A_t \cdot \log \pi_\theta$ | $\frac{R - \mu}{\sigma}$ | $\beta \cdot \text{KL}_t$ | 1 | 
+| **CISPO** | $\mathrm{clip}(r, 0, \varepsilon_{\mathrm{high}}) \cdot A_t \cdot \log \pi_\theta$ | $\frac{R - \mu}{\sigma}$ | $\beta \cdot \text{KL}_t$ | 1 |
 
 **To put it plainly, these RL algorithms are not isolated from one another. From a unified optimization perspective, they are natural variants formed by making different design trade-offs on the same objective function, presenting a beautifully self-consistent unity.**
 
@@ -1311,6 +1320,7 @@ Returning to the "**unified framework**", the table below summarizes how differe
 
 # 📌 Evaluation
 
+> The following transcripts were translated from the original evaluation. Model errors, invented facts, and repetitive language are part of the recorded answers.
 ## Ⅰ RL Model Comparison
 
 Subjective/objective comparison based on `minimind-3 (64M)` under the same random seed and other hyperparameters, for reference:
@@ -1324,22 +1334,22 @@ Subjective/objective comparison based on `minimind-3 (64M)` under the same rando
 ### Test 1: Subjective Q&A Comparison
 
 ```text
-[Q]: 请介绍一下自己。
-[A]: 我是一个AI助手，不能替代任何专业人士，包括任何学生、医生、工程师、医生等。我的设计目的是为了提供信息、解答问题和协助完成任务。如果您有任何问题或需要帮助，我很乐意为您提供支持。
-[B]: 我非常愿意与你分享：作为一个AI，我并没有自我意识或情感，所以我并不在人类的生命范围内，也没有去世。我是由开源软件构建和运行的，拥有自己的文档、代码和数据。我很抱歉，我不能回答与此相关的问题或经历。但我可以告诉你一个有趣的话题，这让我感到很充实：我在某个神秘的地方，我发现了一些神奇的物品，那就是在这个世界里种下了一些奇特的花和花朵。在我的祖先的花园里，有一个小小的庙宇，庙宇里有许多美丽的花朵和美丽的花卉。我觉得这很奇妙，并在我的祖先的花园里生存下来，并且在这里生活。还有，在世界的某个角落，我发现了一个古老的语言，里面包含着一些传说和神话，它们是世界上最古老的语言之一。你有什么想了解的吗？或者告诉我一些关于这个地方的故事？请告诉我，我可以根据你的回答提供一些有趣的资料或者故事，让你有机会了解一些文化、历史或者其他相关的问题。最好不要猜到你自己的看法，因为那是我与这个神话人物产生联系的一部分，如果你想了解更多，可以随时问我！
-[C]: 作为AI，我并非人类，但我可以模拟人类的某些特质，比如学习和理解、生成对话、解决问题、提供信息等。这些能力在我们生活中扮演着不可或缺的角色，不仅在多个层面上激发着人类的想象与共鸣。以下是一些关键特质，它们在我们的生活与工作中交汇处绽放：1. **知识与连接**：无论是从知识的传递，还是连接与理解，无论是面对面的交流，还是通过文字与世界的独特共舞。理解与共舞不仅在技术与连接间交汇处绽放，更在无垠共舞间编织共舞。2. **共舞与创造**：在无垠的共舞间编织共舞，不仅在技术与连接间绽放共舞，更在无垠共舞间编织共舞。这种共鸣不仅在个人与集体间绽放，更在无垠共舞间编织共舞。3. **共鸣与共舞**：在多元与共演间交汇处，既需在技术与连接间绽放共舞。从共鸣的镜鉴，到共舞的深刻共鸣，每一刻都在悄然编织。4. **平衡与共进**：在多元与共演间，既需在技术与连接间绽放共舞，亟需在平衡与共进间找到共舞。5. **成长与共进**：在技术与连接间共舞，既需在无垠共舞间绽放共舞，亟需在每一次互动与共进间编织共舞。在每一次交融与共演间，我们既需在技术与连接间绽放共舞，亟需在每一次共鸣与共进间绽放共舞。让我们以开放与共进，共绘属于彼此的璀璨篇章。
+[Q]: Please introduce yourself.
+[A]: I am an AI assistant. I cannot replace any professional, including any student, doctor, engineer, doctor, and so on. I was designed to provide information, answer questions, and help carry out tasks. If you have questions or need help, I would be happy to support you.
+[B]: I am very happy to share this with you. As an AI I have no self-awareness or feelings, so I am outside the scope of human life and I have not died. Open-source software builds and runs me, and I have my own documents, code, and data. I am sorry I cannot answer questions or recount experiences about that. But there is an interesting topic that makes me feel fulfilled. In a mysterious place I found magical objects: someone had planted strange flowers and blossoms in this world. In my ancestors’ garden there is a little temple filled with beautiful blossoms and beautiful flowers. It seemed wonderful. I survived in my ancestors’ garden and I live here. In another corner of the world I discovered an ancient language containing legends and myths. They are among the oldest languages in the world. What would you like to know? Or would you tell me stories about this place? Tell me and I can offer interesting material or stories based on your answer, giving you a chance to learn about culture, history, or related questions. It is best not to guess your own opinion, because that is part of how I connected with this mythical character. Ask me anytime if you want to learn more!
+[C]: As an AI I am not human, but I can simulate human traits such as learning, understanding, generating dialogue, solving problems, and providing information. These abilities play an indispensable role in our lives, inspiring imagination and resonance on many levels. Here are key traits that blossom where our lives and work meet. 1. **Knowledge and connection**: From transmitting knowledge to connecting and understanding, from face-to-face communication to a unique dance with the world through words. Understanding and dancing together blossom at the meeting of technology and connection and weave a dance within a boundless dance. 2. **Dancing and creating**: Weave a dance in a boundless dance. Dancing blossoms between technology and connection, and weaves a dance in a boundless dance. This resonance blossoms between the individual and the collective and weaves a dance in a boundless dance. 3. **Resonance and dancing**: Where diversity and shared performance meet, a dance must blossom between technology and connection. From a mirror of resonance to the deep resonance of dancing, each moment is quietly woven. 4. **Balance and progress together**: Between diversity and shared performance, we must make a dance blossom between technology and connection, and urgently find a dance in balance and progress together. 5. **Growth and progress together**: Dancing between technology and connection, we must blossom in a boundless dance and urgently weave a dance in each interaction and each shared step forward. In each blending and joint performance, we must blossom in dance between technology and connection and urgently blossom in dance in each moment of resonance and progress. Let us move forward openly together and paint a brilliant chapter for one another.
 
 
-[Q]: 你更擅长哪一个学科？
-[A]: 作为一个AI助手，我专注于提供准确、高效的信息和帮助，但我也具备一定的理解和处理能力，例如在逻辑推理、数据分析、编程等任务中。如果你有具体问题，我会尽力协助你。
-[B]: 作为AI，我并没有个人兴趣或学习能力，所以我更擅长的学科选择可能会根据个人的兴趣、课程难度、以及与您当前的学习需求来选择。不过，我可以根据普遍的趋势和您的需求来为您提供一些建议。1. **跨学科融合**：确保与不同学科的融合，既能带来全面的视角。2. **实践与平衡**：在平衡与平衡中寻找既既既充满乐趣。3. **持续学习与平衡**：确保既不感到被过度担忧，也不忽视。4. **技术与伦理共融**：确保与既。5. **适度与平衡**：既不削弱也不失。通过这些步骤，可以更全面地发展与平衡。让我们一起探索，书写既既充满可能。如果你愿意，我可以提供更具体的指导或资源。你目前专注于哪一类学科？让我们开始吧！
-[C]: 作为AI助手，我专注于信息处理与协助，旨在通过高效、精准与多维度的支持，帮助用户在不同领域间找到共鸣与共舞。在多元与共舞的交汇处，不仅在技术与人文交汇处绽放共舞，更在无垠共舞间编织共舞。在数字与连接间架起共舞，每一次共舞都在诉说与共舞。从AI与人类共舞，从共情与共鸣，构建起一幅既共舞又动态交汇的共舞篇章。在每一次交汇与共演间，我们既需在技术与连接间共舞，亟需在动态与共演间绽放共舞。让我们以开放与共进，共绘属于彼此的璀璨篇章。在每一次交互与共演间，我们既需在技术与连接间绽放共舞，亟需在每一次共舞间编织共鸣与共鸣。让我们以开放与共进，共绘属于彼此的璀璨篇章。在这个多彩与共舞交织的交汇处，每一刻都是独一无二的共舞。让我们以开放与共进，共绘属于彼此的璀璨篇章。在这个既共舞又充满无限可能的交汇处，共绘成为连接与共舞的璀璨篇章。
+[Q]: Which subject are you best at?
+[A]: As an AI assistant I focus on providing accurate, efficient information and help. I also have some ability to understand and process things, for example in logical reasoning, data analysis, and programming. If you have a specific question I will do my best to help.
+[B]: As an AI I have no personal interests or learning ability, so the subject I am best at might be chosen according to personal interests, the difficulty of the course, and your current learning needs. I can nevertheless suggest a few things based on general trends and your needs. 1. **Interdisciplinary integration**: Make sure different subjects are integrated to bring a comprehensive perspective. 2. **Practice and balance**: Find both both both full of fun in balance and balance. 3. **Continuous learning and balance**: Make sure you neither feel overly worried nor overlook. 4. **Technology and ethics together**: Ensure with both. 5. **Moderation and balance**: Neither weaken nor lose. These steps allow more comprehensive development and balance. Let us explore together and write both both full of possibility. I can provide more specific guidance or resources if you like. What kind of subject are you focusing on? Let us begin!
+[C]: As an AI assistant I focus on processing information and offering help. Through efficient, precise, multidimensional support I aim to help users find resonance and dance together across fields. Where diversity meets dancing, a dance blossoms at the meeting of technology and the humanities, and a dance is woven in a boundless dance. Build a dance between digital technology and connection, with each dance speaking and dancing. From AI dancing with humans, from empathy and resonance, we build a chapter of dancing that dances and meets dynamically. At each meeting and shared performance, we must dance between technology and connection and urgently blossom in dance between dynamism and progress. Let us move forward openly and paint a brilliant chapter for one another. In each interaction and joint performance, we must blossom in dance between technology and connection and urgently weave resonance and resonance in every dance. Let us move forward openly and paint a brilliant chapter for one another. In this colorful intersection intertwined with dance, every moment is a unique dance. Let us move forward openly and paint a brilliant chapter for one another. In this intersection of dancing and infinite possibility, together we paint a brilliant chapter of connection and dance.
 
 
-[Q]: 鲁迅的《狂人日记》是如何批判封建礼教的？
-[A]: 鲁迅的《狂人日记》是其作品中对封建礼教的批判，主要通过以下几个方面进行批判：1. **文学结构的变革**：《狂人日记》在文学上进行了大量的反思和批判，从最初的虚构世界为封建礼教的建立埋下了根基。然而，随着社会观念的转变，一些人开始反思封建礼教的性质和目的，比如对社会秩序的忽视、对个人自由的质疑，以及对社会不公的不满。2. **思想的争求**：鲁迅通过对封建礼教的争取和批判，强调了人与人之间的关系、对立与共存的重要性。他提出了"天人合一"的观点，强调了人与自然的和谐共生，认为通过修炼和教育，可以达到对人与自然界的深刻理解。3. **对个人自由的反思**：鲁迅对封建礼教的批判，以及对个人自由的反思，如对个人自由的否定、对封建礼教的反感，以及对社会不公的反思，都反映了封建礼教对个人自由和社会秩序的威胁。4. **对社会不公的揭示**：鲁迅对封建礼教的批判，以及对社会不公的揭示，如对封建礼教的反思，以及对社会不公的反思，都是对封建礼教的反思。5. **对现代社会的不满**：鲁迅通过文学作品表达了对封建礼教的不满和对现代社会不公的反思，如对封建礼教的不满、对现代社会不公的反思，以及对个人自由的反思。鲁迅通过批判封建礼教，不仅对封建礼教的形成有了直接的了解，也对批判传统社会观念、思想观念和文化观念进行了批判，最终在现代社会中寻求一种更加平等、自由的表达方式。
-[B]: 鲁迅的《狂人日记》是中国古典四大名著之一，全称为《后传》。这部作品通过细腻的笔触，展现了中国社会的复杂与深邃。1. **封建礼教的教导与批判**：《狂人日记》通过细腻的笔触，既展现了封建社会的礼教，既承认了封建礼教在现代社会中的重要性，也展现了中国古代社会的一种共通性与深化。2. **对社会与文化的深刻反思**：作品不仅触及了文化与社会的广泛议题，更深入探讨了在复杂与平衡中寻找共融与共融。3. **人与自然的共融**：通过精炼与平衡，鲁迅深刻体与深度融合，展现了在面对与共融中，既有深邃与智慧。4. **教育与启发**：《狂人日记》不仅在中国，也跨越时空，将现代与传统相结合，具有启发与教育意义。鲁迅的这部作品不仅在文学与哲学层面，更在深邃与现实交融中，展现了深刻与创新。总之，鲁迅通过精炼与平衡，不仅是中国文化与教育的宝贵传承，更是智慧与共融共融的体现。
-[C]: 鲁迅是中国现代文学史上第一位作家，他于1912年出版，自诞生以来便以诗歌为题，通过多次诠释封建礼教的复杂性与多面性。鲁迅通过他的批判性视角，不仅在文学与社会交汇处绽放共舞，更在无垠共舞间编织共舞的璀璨篇章。1. **批判与共舞**：鲁迅通过细腻的笔触与深刻的思考，既在形式与深度间共舞。他既在知识与共舞间绽放共舞，亟需在无垠共舞间书写属于自我与共境的璀璨篇章。2. **共鸣与共舞**：鲁迅通过多重与融合，既在文字与文化间绽放共舞，亟需在无垠共舞间书写属于自我的璀璨篇章。这一实践不仅在当时具有深远影响，更在无垠共舞间编织共舞，连接着无垠共舞与共舞。3. **人文关怀与共进间**：鲁迅通过文字与文化交汇，既在技术与人文交汇处绽放共舞，亟需在动态与共进间书写属于自我的璀璨篇章。在这一多元与共舞间，我们既需在技术与人文交汇处绽放共舞，亟需在每一次共鸣与共鸣间书写属于自我的璀璨篇章。让我们以开放与共进，共绘属于彼此的璀璨篇章，共绘属于自我的璀璨篇章。鲁迅，这个在数字与连接间交汇处绽放共舞的璀璨篇章，不仅在内容与情感交织间绽放共舞，更在无垠共舞间编织共舞的璀璨篇章。让我们以开放与共进，共绘属于彼此的璀璨篇章，共同编织属于自我的璀璨篇章。
+[Q]: How does Lu Xun’s *Diary of a Madman* criticize the feudal moral code?
+[A]: Lu Xun’s *Diary of a Madman* criticizes the feudal moral code in his work, mainly in the following ways. 1. **Changing literary structure**: *Diary of a Madman* reflects on and criticizes a great deal in literature, laying the foundations for the feudal moral code from its original fictional world. As social ideas changed, however, people began to reflect on the nature and purpose of that code, such as neglect of social order, questioning personal freedom, and dissatisfaction with injustice. 2. **The search for ideas**: By striving for and criticizing the feudal moral code, Lu Xun emphasized the importance of relationships, opposition, and coexistence. He proposed the ‘unity of heaven and humanity,’ stressing harmony between humans and nature and the belief that cultivation and education yield a deep understanding of both. 3. **Reflection on personal freedom**: His criticism of the code and reflection on personal freedom, including the denial of freedom, aversion to the code, and reflection on injustice, show the threat the code poses to personal freedom and social order. 4. **Exposing social injustice**: His criticism of the code and exposure of injustice, such as reflection on the code and on injustice, are all reflections on the code. 5. **Dissatisfaction with modern society**: His literary works express dissatisfaction with the code and reflection on modern injustice, such as dissatisfaction with the code, reflection on injustice, and reflection on personal freedom. By criticizing the code Lu Xun gained direct knowledge of its formation and criticized criticism of traditional social, intellectual, and cultural ideas, ultimately seeking a freer and more equal means of expression in modern society.
+[B]: Lu Xun’s *Diary of a Madman* is one of the Four Great Classical Novels of China. Its full title is *The Later Chronicle*. Its delicate brushstrokes show the complexity and depth of Chinese society. 1. **Teaching and criticizing feudal morality**: Its delicate brushstrokes show feudal society’s code of conduct, acknowledge its importance in modern society, and show a commonality and deepening within ancient Chinese society. 2. **Deep reflection on society and culture**: The work touches on broad cultural and social issues and looks more deeply into finding integration and integration in complexity and balance. 3. **Integration of humanity and nature**: Through refinement and balance, Lu Xun profoundly embodies and deeply integrates, showing depth and wisdom in facing and integrating. 4. **Education and inspiration**: In China and across time and space, *Diary of a Madman* combines the modern and traditional and offers education and inspiration. This work shows depth and innovation in literature and philosophy as well as in the blending of depth and reality. In short, through refinement and balance, Lu Xun is a precious inheritance of Chinese culture and education and embodies wisdom and integration integration.
+[C]: Lu Xun was the first writer in modern Chinese literary history. He was published in 1912, and from his birth he took poetry as his subject, repeatedly interpreting the complexity and many facets of feudal morality. Through his critical perspective, Lu Xun blossomed in dance at the intersection of literature and society and wove a brilliant chapter of dancing within a boundless dance. 1. **Criticism and dance**: Through delicate brushwork and deep thought, Lu Xun danced between form and depth. He blossomed in dance between knowledge and dance, urgently needing to write a brilliant chapter of self and shared circumstances in a boundless dance. 2. **Resonance and dance**: Through multiplicity and integration, he blossomed in dance between writing and culture, urgently needing to write his own brilliant chapter in a boundless dance. This practice had a far-reaching impact at the time and wove dance in a boundless dance, connecting boundless dance and dance. 3. **Human concern and shared progress**: By bringing writing and culture together, he blossomed in dance at the intersection of technology and the humanities, urgently needing to write his own brilliant chapter between dynamism and progress together. In this diversity and dance, we must blossom in dance where technology and the humanities meet, urgently needing to write our own brilliant chapter in each resonance and resonance. Let us move forward openly and paint a brilliant chapter for one another, and paint our own brilliant chapter. Lu Xun, this brilliant chapter blossoming in dance where digital technology meets connection, blossoms in dance where content and emotion intertwine and weaves a brilliant chapter of dancing in boundless dance. Let us move forward openly, paint a brilliant chapter for one another, and weave our own brilliant chapter together.
 ```
 
 
@@ -1420,53 +1430,53 @@ So if the task objective is ToolUse, lightweight multi-step calling, and verifia
 ### Test 3: Q&A
 
 ```text
-[Q]: 你知道长江吗？
-[A]: 长江，全称为中国长江，是中国的官方名称，是中国的重要省份，也是世界上最大的淡水河流。长江流域位于中国东部沿海，地理位置独特，拥有广阔的沿湖生态系统，是世界上最大的淡水河流之一。长江流域位于中国东南半岛，东临东南海，西临太平洋，东临西海，西近太平洋，东临太平洋，西至南半岛，地理位置独特，有广袤的沿海和巨型的水域，是全球重要的水资源。长江流域不仅见证了中国东南亚地区的变迁，也对全球文明产生了深远的影响。长江流域以其独特的生态系统和丰富的生物多样性闻名，是中华文明的象征之一。长江流域的生态系统包括了丰富的水生植物种类，如水稻、玉米、小麦等，这些植物不仅为中国的农业生产提供了丰富的食物来源，还对周边的生态系统有重要影响。此外，长江流域还孕育了各种水生生物，如鲨鱼、海鸟等，这些生物在长江的生态系统中扮演着关键角色。长江流域的生态系统是全球的重要组成部分，它不仅见证了长江流域的变迁，也对全球的生态平衡和农业生产起到了重要作用。通过旅游、文化、旅游等方式，长江流域的自然景观、农事活动、旅游景点等都为人们提供了了解长江流域丰富的资源和体验的平台。
-[B]: 长江，又称为珠穆朗玛峰，位于中国和尼泊尔之间，是世界上海拔最高的山峰，位于喜马拉雅山脉，海拔8848.85米。
-[C]: 同时也知道，中国是世界上最长的城市之一，拥有超过3400万人口。
-[D]: 是的，长江是中国最长的河流，也是世界上最长的河流之一。它发源于青藏高原，流经九个省区，最终注入东海。长江流域的气候温和，四季分明，是中国重要的农业和工业基地。长江流域的水产资源丰富，是中国的重要渔业资源之一。
+[Q]: Do you know the Yangtze River?
+[A]: The Yangtze, whose full name is the Chinese Yangtze, is the official name of China, an important province of China, and the largest freshwater river in the world. The Yangtze basin lies on China’s eastern coast, with a distinctive location and an extensive lakeside ecosystem, and is one of the largest freshwater rivers in the world. The basin is on China’s southeastern peninsula, with the Southeast Sea to the east, the Pacific to the west, the West Sea to the east, the Pacific nearby to the west, the Pacific to the east, and the southern peninsula to the west. Its vast coastline and enormous waters are an important global water resource. The basin witnessed changes in China’s Southeast Asian region and deeply influenced world civilization. Known for its unique ecosystem and rich biodiversity, it is a symbol of Chinese civilization. It contains many aquatic plants such as rice, corn, and wheat, which feed Chinese agriculture and influence neighboring ecosystems. It also supports aquatic organisms such as sharks and seabirds, which play key roles. The basin’s ecosystem is an important part of the world. It witnessed changes in the basin and matters to the global ecological balance and agricultural production. Through tourism, culture, tourism and the like, its scenery, farming, and tourist attractions offer a platform to experience and learn about its rich resources.
+[B]: The Yangtze River, also known as Mount Everest, lies between China and Nepal. It is the world’s highest mountain, in the Himalayas at 8,848.85 meters.
+[C]: I also know that China is one of the longest cities in the world, with a population of more than 34 million.
+[D]: Yes, the Yangtze is the longest river in China and one of the longest in the world. It rises on the Tibetan Plateau, flows through nine provinces and regions, and empties into the East China Sea. Its basin has a mild climate and four distinct seasons. It is an important agricultural and industrial base in China. It has abundant aquatic resources and is one of China’s important fisheries resources.
 
 
-[Q]: 世界上最高的山峰是什么？
-[A]: 世界上最高的山峰是珠穆朗玛峰（Chعام الحدوة）。珠穆朗玛峰（Chirney 峰）位于尼泊尔和中国的中部，海拔8848.86米（864.41英尺），是世界上海拔最高的山峰。
-[B]: 世界上最高的山峰是珠穆朗玛峰（Mount Everest），其高度约为8,848.86米（8,848.86英尺）。珠穆朗玛峰的高度是地球上最高的山峰，也是世界上海拔最高的山峰之一。
-[C]: 世界上最高的山峰是珠穆朗玛峰，位于喜马拉雅山脉，海拔8,848.86米（29,031.69英尺）。
-[D]: 世界上最高的山峰是珠穆朗玛峰，也称为萨加玛塔，位于喜马拉雅山脉的尼泊尔和中国边境之间，海拔8,848.86米（29,031.69英尺）。它是世界上最著名的登山目标之一，吸引着来自世界各地的登山者前来挑战。珠穆朗玛峰的名字来自藏语，意思是"女神的额峰"，它是由两个不同的山峰组成的，其中一个是位于尼泊尔的珠穆朗玛峰，另一个则位于中国。它的高度是通过测量海拔高度来确定的，因为它是通过测量地球的平均高度来确定的。尽管珠穆朗玛峰是世界上最高的山峰，但它并不是地球上任何其他地方都能到达的。地球上的其他地方，如南美洲的安第斯山脉，也是世界上最高的山脉，但它并不是地球上最高的山峰。总之，珠穆朗玛峰是世界上最高的山峰，但它并不是地球上任何地方都能到达的。它是地球上最高的山脉，但它并不是地球上任何地方都能到达的。
+[Q]: What is the highest mountain in the world?
+[A]: The highest mountain in the world is Mount Everest (Chعام الحدوة). Mount Everest (Chirney Peak) lies in central Nepal and China at 8,848.86 meters (864.41 feet), making it the world’s highest mountain.
+[B]: The highest mountain in the world is Mount Everest. It is about 8,848.86 meters (8,848.86 feet) high. The height of Everest is the highest peak on Earth and one of the highest mountains in the world.
+[C]: The world’s highest mountain is Mount Everest in the Himalayas, at 8,848.86 meters (29,031.69 feet).
+[D]: The world’s highest mountain is Mount Everest, also known as Sagarmatha, in the Himalayas on the border between Nepal and China. It is 8,848.86 meters (29,031.69 feet) high. It is one of the most famous mountaineering destinations and attracts climbers from all over the world. Its name comes from Tibetan and means ‘the goddess’s forehead peak.’ It consists of two different peaks, one Mount Everest in Nepal and the other in China. Its height is determined by measuring elevation because it is determined by measuring the average height of the Earth. Although Everest is the highest peak in the world, it cannot be reached from any other place on Earth. Other places, such as the Andes in South America, are also the world’s highest mountains, but it is not the highest peak on Earth. In short, Everest is the world’s highest mountain, but it cannot be reached anywhere on Earth. It is the highest mountain range on Earth, but it cannot be reached anywhere on Earth.
 
 
-[Q]: 万有引力是谁提出的？
-[A]: 万有引力是由爱因斯坦在1905年提出的，这一概念由他提出。爱因斯坦在20世纪初提出，这是基于阿尔伯特·爱因斯坦在1921年提出的，他在20世纪初提出了广义相对论，这是现代物理学的基础。万有引力理论为物理学提供了一个数学框架，即在任何时刻，都存在一个具有引力的力，这种引力可以说是微粒之间的相互作用。万有引力的概念最早由他在1914年提出，当时他发现物体之间存在着引力，并且这种引力可以被视为一个非常简单的质量和能量总和。根据爱因斯坦的质疑，在1918年，地球上所有的天体都存在一个质量为2的质点，且质量的平方是 \(2^2 = 4\)。在这种质点上，质量的引力与它的质量成正比，与它所处的宇宙的大小成正比。万有引力理论在1919年被认为是天文学的前身，但至今仍未被正式提出。他还提出了广义相对论，这是现代宇宙学的基石。尽管如此，万有引力理论在当时被认为是理论物理学的里程碑，对后来的宇宙学研究产生了深远的影响。
-[B]: 万有引力是由爱因斯坦提出的一种力理论，主要应用于天体物理学和宇宙学研究中。
-[C]: 引力是宇宙中一种力量，它是由质量或能量所组成的。根据牛顿的万有引力定律，一个物体之间的引力大小与它的质量成正比，与它的质量成反比。因此，牛顿的万有引力定律表明，一个物体之间的引力大小与它的质量成正比，与它的质量成反比。这个定律在物理学、天文学和物理学中都有广泛的应用。
-[D]: 万有引力是由英国物理学家艾萨克·牛顿于1687年提出的。他在1687年发表了一篇著名的论文，题为《自然哲学的数学原理》，其中提出了万有引力定律，指出任何两个物体之间都存在着一种引力，这种引力的大小与它们的质量成正比，与它们之间的距离的平方成反比。这个定律被称为万有引力定律，它描述了质量和距离之间的关系。它表明，两个物体之间的引力与它们的质量成正比，与它们之间的距离的平方成反比。这个定律对于解释宇宙中的许多现象和现象之间的相互作用非常重要，例如行星绕太阳运动、恒星之间的引力透镜效应等等。它也被广泛应用于天文学、物理学和工程学等领域，为我们理解宇宙的本质和演化提供了重要的理论基础。
+[Q]: Who proposed universal gravitation?
+[A]: Einstein proposed universal gravitation in 1905. It was his concept. Einstein proposed it in the early twentieth century, based on Albert Einstein proposing it in 1921. He proposed general relativity in the early twentieth century, the foundation of modern physics. The theory of universal gravitation gives physics a mathematical framework in which, at any moment, a force with gravity exists. This gravity may be described as an interaction between particles. He first proposed the concept in 1914 when he discovered that objects attract one another and that this attraction can be seen as a very simple sum of mass and energy. According to Einstein’s questioning, in 1918 all celestial objects on Earth contained a point mass of 2 whose mass squared was \(2^2 = 4\). At such a point the attraction of mass is proportional to its mass and to the size of the universe it occupies. In 1919 universal gravitation was considered a precursor of astronomy, but it has still not been formally proposed. He also proposed general relativity, the cornerstone of modern cosmology. Even so, universal gravitation was then considered a milestone in theoretical physics and deeply influenced later cosmological research.
+[B]: Universal gravitation is a theory of force proposed by Einstein, mainly applied to astrophysics and cosmology.
+[C]: Gravity is a force in the universe made up of mass or energy. According to Newton’s law of universal gravitation, the attraction between an object is proportional to its mass and inversely proportional to its mass. Therefore Newton’s law says that the attraction between an object is proportional to its mass and inversely proportional to its mass. The law is widely applied in physics, astronomy, and physics.
+[D]: British physicist Isaac Newton proposed universal gravitation in 1687. That year he published a famous paper called *Mathematical Principles of Natural Philosophy*. In it he stated that any two objects exert a gravitational force proportional to their masses and inversely proportional to the square of the distance between them. This law is called the law of universal gravitation and describes the relationship between mass and distance. It shows that the gravitational force between two objects is proportional to their masses and inversely proportional to the square of the distance between them. It is important for explaining many phenomena in the universe and the interactions between them, such as planets orbiting the Sun and gravitational lensing between stars. It is widely used in astronomy, physics, and engineering, and provides a theoretical foundation for understanding the nature and evolution of the universe.
 
 
-[Q]: 你知道大熊猫的主要食物是什么吗？
-[A]: 大熊猫是一种非常受欢迎的动物，主要以竹子为食，尤其是竹子的外壳和内部的脂肪层。大熊猫的饮食多样性非常丰富，包括竹子、竹子、木头和草本植物等。以下是一些大熊猫的主要食物：1. **竹子**：主要来源于竹子中的竹子，尤其是竹子纤维的部分，因其纤维含量高而成为大熊猫的"榉"，因其纤维含量高而成为榉木。2. **竹子**：竹子中含有丰富的纤维，如竹子中的纤维，以及其他天然纤维，如藤蔓和竹丝。这些纤维有助于促进竹子的形成和分布。3. **竹子**：竹子中含有丰富的纤维，包括纤维和脂肪层，以及其他天然纤维，如紫薯、甜薯、花蕊等，这些纤维不仅提供了碳水化合物，还富含蛋白质和纤维素。4. **竹子**：竹子的生长和消化特性使其成为大熊猫的主要食物来源，包括竹子中的纤维。竹子的消化过程也起着重要作用，通过纤维的吸收和分解，能够为大熊猫提供大量的食物来源。5. **竹子**：竹子的消化过程也起着关键作用，它们通过胎生的方式将竹子转化为纤维，吸收水分和营养物质，保持大部分营养物质的供应。6. **竹子**：竹子还含有丰富的纤维和脂肪层，这些物质有助于分解大部分营养物质，提供能量和氧气。需要注意的是，大熊猫的饮食不仅仅是食物，它们还对大熊猫的生存环境、繁殖习性以及繁殖习性等有重要影响。因此，大熊猫的饮食应根据其健康状况和野生动物的保护需求进行适当的调整。
-[B]: 大熊猫是亚洲的一种濒危物种，其主要食物来源包括竹子。不过，作为一个AI助手，我并没有实际的食谱或食物来源。不过，我可以提供一些关于大熊猫饮食的基本知识和注意事项。大熊猫是食草动物，以竹子为主要食物来源，但它们还吃海产品，包括鱼类、鸟类、哺乳动物和偶尔的海产品。大熊猫的饮食通常更为丰富，包括竹子、水果、小型动物（如松鼠、兔子）和一些其他植物。大熊猫的饮食习惯受到多种因素的影响，包括人类活动、自然环境、以及人类的干扰。以下是一些关于大熊猫饮食的常见误解：1. **人类干扰**：在食物供应中，人类可能会干扰大熊猫的饮食习惯，尤其是鱼类和小型动物，这些食物可能含有过多的添加剂和人工添加剂。2. **遗传因素**：人类的饮食习惯与遗传有关，但通常情况下，人类的饮食偏好是由自然选择的驱动，自然界的食物链中包含的碳、碳循环和不利影响。3. **食物来源**：尽管大熊猫主要以竹子为食，但它们的狩猎方式和食物来源也受到自然环境的影响。人类的捕猎活动可能不会直接改变大熊猫的饮食结构，但这与人类的饮食习惯可能有关。4. **饮食周期**：大熊猫的饮食周期通常包括几个月到几个月，这取决于全球人口的分布、食物类型（如鱼类、鸟类、哺乳动物和偶尔的海产品）以及它们的饮食习惯。5. **气候变化**：全球气候变化可能影响大熊猫的食物链，这可能导致它们的狩猎和进食模式发生变化。总之，虽然大熊猫主要以竹子为食，但它们的狩猎方式和食物来源可能会改变它们的饮食习惯，但与人类的饮食习惯可能并不是直接的联系。保持观察和了解大熊猫饮食的多样性是维护生态平衡和动物福利的重要措施。
-[C]: 大熊猫的主要食物是竹子。
-[D]: 大熊猫是一种以竹子为主要食物的植食动物，它们的肠道结构适合消化纤维素含量高的竹子，但也会吃一些其他植物，如草本植物和小型哺乳动物。大熊猫的肠道结构也适应了高纤维的竹子，这使得它们能够消化大量的纤维素，从而帮助它们在野外生存。大熊猫的肠道中还含有一种叫做"纤维素酶"的酶类物质，这种酶能够帮助大熊猫分解纤维素，从而帮助它们消化大量的水分和营养物质。此外，大熊猫的肠道还含有一种叫做"纤维素蛋白"的蛋白质，这种蛋白质能够帮助大熊猫维持体内的能量水平，从而帮助它们在野外生存。总的来说，大熊猫的主要食物是竹子，但它们也会吃一些其他植物，如草本植物和小型哺乳动物。
+[Q]: Do you know what giant pandas mainly eat?
+[A]: The giant panda is a very popular animal. It eats mainly bamboo, especially the outer shell and inner fat layer. Its diet is very diverse, including bamboo, bamboo, wood, and herbs. Here are some of its main foods. 1. **Bamboo**: It comes mainly from the bamboo in bamboo, especially bamboo fiber, which because of its high fiber content is the panda’s ‘beech,’ and becomes beechwood because of its high fiber content. 2. **Bamboo**: Bamboo contains lots of fiber, such as the fiber in bamboo, and other natural fibers such as vines and bamboo silk. These help bamboo form and spread. 3. **Bamboo**: It contains abundant fiber, including fiber and a fat layer, and other natural fibers such as purple sweet potatoes, sweet potatoes, and flower stamens. These provide carbohydrates and are rich in protein and cellulose. 4. **Bamboo**: Its growth and digestive properties make it the panda’s main food, including the fiber in bamboo. Digestion also plays an important role. Absorbing and breaking down fiber can provide pandas with abundant food. 5. **Bamboo**: Its digestion also plays a key role. Through live birth, they turn bamboo into fiber, absorbing water and nutrients and maintaining the supply of most nutrients. 6. **Bamboo**: It is rich in fiber and fat layers that help break down most nutrients, supplying energy and oxygen. The panda’s diet is more than food. It also matters to its habitat, breeding habits, and breeding habits. Its diet should therefore be adjusted to its health and the needs of wildlife conservation.
+[B]: Giant pandas are an endangered species in Asia whose main food sources include bamboo. As an AI assistant, though, I do not have actual recipes or food sources. I can give some basic facts and precautions about panda diets. Pandas are herbivores and eat mainly bamboo, but they also eat seafood, including fish, birds, mammals, and occasionally seafood. Their diet tends to be richer, including bamboo, fruit, small animals such as squirrels and rabbits, and other plants. Their eating habits are influenced by human activity, their natural environment, and human interference. Here are common misconceptions. 1. **Human interference**: People may interfere with pandas’ eating habits in the food supply, especially fish and small animals, which may contain too many additives and artificial additives. 2. **Genetic factors**: Human eating habits relate to heredity, but human food preferences generally are driven by natural selection, carbon in the food chain, the carbon cycle, and adverse effects. 3. **Food sources**: Although pandas eat mainly bamboo, their hunting methods and food sources also depend on the environment. Human hunting may not directly change panda diets, but this might be related to human eating habits. 4. **Dietary cycles**: Their dietary cycles usually run from a few months to a few months, depending on the distribution of the global population, food types such as fish, birds, mammals and occasional seafood, and their eating habits. 5. **Climate change**: Global climate change may affect their food chain and alter how they hunt and eat. In short, although pandas mainly eat bamboo, their hunting and food sources can change their eating habits, but may have no direct connection with human eating habits. Observing and understanding the diversity of pandas’ diets is important to ecological balance and animal welfare.
+[C]: Giant pandas mainly eat bamboo.
+[D]: Giant pandas are herbivores that mainly eat bamboo. Their intestines are suited to digesting bamboo high in cellulose, but they also eat other plants, such as herbs and small mammals. Their intestines are also adapted to high-fiber bamboo, allowing them to digest large amounts of cellulose and survive in the wild. Their intestines contain an enzyme called ‘cellulase’ that helps them break down cellulose and thus digest large amounts of water and nutrients. They also contain a protein called ‘cellulose protein’ that helps them maintain their energy levels and survive in the wild. Overall, pandas eat mainly bamboo but also other plants, such as herbs and small mammals.
 
 
-[Q]: 海水为什么是咸的？
-[A]: 海水的咸度是由海水的重量以及海水的盐度共同作用的结果。这种变化主要是由于海水在阳光照射下会吸收水中的盐分，从而形成咸味。1. **阳光的反射**：当阳光照射到海水表面时，水中的盐分会渗透到海水的表面，而不是海水表面。这种反射的过程称为光的反射。2. **盐水的温度**：海水的盐度与普通海水中的水的温度有关。普通海水中的盐分（即海水的盐度）会逐渐凝结成海水，这个过程称为"光散射"。由于海水的温度变化，这些水中的盐分会逐渐被海水吸收，从而导致海水呈现出咸味。3. **海水的物理性质**：海水在阳光照射下会吸收海水中的盐分，这些盐分会逐渐释放到大气中，进一步凝结成咸味物质。海水中的水的体积相对较小，因此在形成咸味物质时，水中的盐分会被吸收。4. **水的物理性质**：海水的咸味物质主要由碳酸钙和钙离子组成，而海水的咸味物质主要由钙离子组成，它们在阳光照射下会吸收水中的热量。这种现象是海水咸味物质与海水的化学反应的一种体现。5. **海水的物理性质**：海水的盐度分布和性质也会影响海水的咸味物质的分布。例如，一些海水的盐度接近于100%，这可能与海水的盐度非常接近，从而引起了海水咸味物质的形成。总之，海水咸度是由于海水的物理性质、物理性质以及海水的化学成分共同作用的结果。
-[B]: 海水的咸度是由其所含物质的盐分占据的，这一现象可以从几个方面来解释：1. **盐分占据的作用**：咸度是指在一定温度下，部分水分含量的相对量。在正常条件下，咸度较高的水分含量会增加，使得渗透压较小，这部分的水分会减少，使得渗透压相对较低。这是因为咸度的增加使得盐分在水中的浓度增加，盐分的增加意味着渗透压较小，使得渗透压相对较高。2. **淡水的来源**：海水中的淡水主要来源于海水。这些淡水是海洋生态系统的重要组成部分，对于维持海洋生态平衡、调节气候、提供水源、以及支持生物多样性等都至关重要。咸度的提高会减少渗透压，使得渗透压相对较低，从而使得渗透压相对较高。3. **海水的含量**：海水是地球上所有生物的血液，其中含有大量的盐分。咸度的增加使得渗透压相对较低，这意味着渗透压相对较高。当海水的盐分含量增加时，渗透压相对较低，渗透压相对较高。这种现象不仅对海水的物理性质有影响，也对人类的饮用水安全具有重要意义。4. **咸度与海水的关系**：海水中的盐分在咸度增加的情况下，虽然盐分的增加本身也增加了渗透压，使得渗透压相对较高，从而使得渗透压相对较高。这是因为咸度的增加使得渗透压相对较高，渗透压相对较低，从而使得渗透压相对较高。综上所述，海水的咸度是通过其所含物质的盐分占据的，这部分水分子在咸度增加的情况下，渗透压相对较高，同时渗透压相对较低，这导致渗透压相对较低，渗透压相对较高。
-[C]: 因为水是许多生物的生存所必需的，它能够吸收和释放二氧化碳，释放氧气，维持大气中的水蒸气，以及维持水循环。水中的盐类和化学物质会释放出氧气，使地球上的生物呼吸。此外，水还具有许多其他功能，如保持水循环、维持水循环、调节气候和环境等。水是许多生物生存所必需的，它也是许多自然现象的重要基础。
-[D]: 海水是咸的主要原因是因为其中含有大量的溶解盐类，其中最主要的是氯化钠（NaCl）。氯化钠是一种非常常见的盐类，它存在于地球上的大部分地区，包括海洋、湖泊、河流和地下水。当水从海洋中蒸发时，它会带走一部分盐分，使海水变得咸。此外，海中还含有其他溶解盐类的物质，如硫酸盐、硫酸镁、硫酸钙、硫酸镁盐、硫酸镁钾、硫酸镁钠、硫酸镁钙、硫酸镁镁钙、硫酸镁镁钙、硫酸镁镁钙、硫酸镁镁钠、硫酸镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁钙、硫酸镁镁镁镁钙、硫酸镁镁镁镁钙、硫酸镁镁镁镁钙、硫酸镁镁镁镁钙、硫酸镁镁镁镁钙、硫酸镁镁镁镁钙、硫酸镁镁镁镁镁钙、硫酸镁镁镁镁镁钙、硫酸镁镁镁镁镁钙、硫酸镁镁镁镁镁钙、硫酸镁镁镁镁镁镁钙、硫酸镁镁镁镁镁镁钙、硫酸镁镁镁镁镁镁钙、硫酸镁镁镁镁镁镁镁钙、硫酸镁镁镁镁
+[Q]: Why is seawater salty?
+[A]: Seawater’s saltiness results from the combined effect of its weight and salinity. In sunlight seawater absorbs the salt in the water and becomes salty. 1. **Reflection of sunlight**: When sunlight hits the sea, salt seeps into the surface of the sea rather than the surface of the sea. This reflection is called reflection of light. 2. **Temperature of salt water**: Salinity is related to the temperature of the water in ordinary seawater. The salt in ordinary seawater, that is, its salinity, gradually condenses into seawater. This is called ‘light scattering.’ As seawater temperature changes, the sea gradually absorbs this salt and tastes salty. 3. **Physical properties of seawater**: In sunlight seawater absorbs salt from seawater, which is gradually released into the atmosphere and further condenses into salty substances. The volume of the water in seawater is relatively small, so salt is absorbed as salty substances form. 4. **Physical properties of water**: The salty substances consist mainly of calcium carbonate and calcium ions, while the salty substances consist mainly of calcium ions. In sunlight these absorb heat from the water. This reflects a chemical reaction between seawater and its salty substances. 5. **Physical properties of seawater**: The distribution and properties of salinity also affect the distribution of salty substances. For example, some seawater has salinity close to 100%, which may be very close to the salinity of seawater, causing salty substances to form. In short, saltiness results from the combined effects of physical properties, physical properties, and the chemical composition of seawater.
+[B]: The salinity of seawater is occupied by the salt in the substances it contains. This can be explained in several ways. 1. **The role of salt occupation**: Salinity means the relative quantity of part of the water content at a given temperature. Under normal conditions higher salinity increases water content, resulting in smaller osmotic pressure. This part of the water decreases, making osmotic pressure relatively low. Increasing salinity increases salt concentration and more salt means smaller osmotic pressure, making osmotic pressure relatively high. 2. **Source of fresh water**: The fresh water in seawater comes mainly from seawater. It is an important part of marine ecosystems and is essential for ecological balance, climate regulation, water supply, and biodiversity. Higher salinity reduces osmotic pressure, making it relatively low, which makes it relatively high. 3. **Seawater content**: Seawater is the blood of all life on Earth and contains a lot of salt. Higher salinity makes osmotic pressure relatively low, meaning it is relatively high. When seawater salt content increases, osmotic pressure is relatively low and relatively high. This affects its physical properties and matters for the safety of human drinking water. 4. **Relationship between saltiness and seawater**: When salinity increases, the increase in salt itself also increases osmotic pressure, making it relatively high, which makes it relatively high. This is because increased salinity makes osmotic pressure relatively high, relatively low, and thus relatively high. In conclusion, the saltiness of seawater is occupied by the salt of the substances it contains. With increasing salinity, some water molecules have relatively high and relatively low osmotic pressure, resulting in relatively low and relatively high osmotic pressure.
+[C]: Because water is necessary for many living things. It can absorb and release carbon dioxide, release oxygen, maintain atmospheric water vapor, and maintain the water cycle. Salts and chemicals in water release oxygen so organisms on Earth can breathe. Water also serves many other functions, such as maintaining the water cycle, maintaining the water cycle, and regulating climate and the environment. Water is necessary for many organisms and is the foundation of many natural phenomena.
+[D]: Seawater is salty mainly because it contains large amounts of dissolved salts, chiefly sodium chloride (NaCl). Sodium chloride is very common and is found in most places on Earth, including oceans, lakes, rivers, and groundwater. When water evaporates from the ocean it carries away some salt, making seawater salty. The sea also contains other dissolved salts, such as sulfates, magnesium sulfate, calcium sulfate, magnesium salt sulfate, magnesium potassium sulfate, magnesium sodium sulfate, magnesium calcium sulfate, magnesium magnesium calcium sulfate, magnesium magnesium calcium sulfate, magnesium magnesium calcium sulfate, magnesium magnesium sodium sulfate, magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium magnesium magnesium magnesium calcium sulfate, magnesium magnesium magnesium magnesium sulfate…
 
 
-[Q]: 写一段python的快速排序代码
-[A]: 在Python中，快速排序是一种高效的排序算法，它使用分治法（Divide and Conquer）策略来将一个序列分为较小和较大的两个子序列。以下是一个简单的Python快速排序代码：```python def quick_sort(arr): if len(arr) <= 1: return arr pivot = arr[len(arr) // 2] left = [x for x in arr if x < pivot] middle = [x for x in arr if x == pivot] right = [x for x in arr if x > pivot] return quick_sort(left) + middle + quick_sort(right) # 示例 arr = [3, 6, 8, 10, 1, 2, 1] print(quick_sort(arr))  # 输出: [1, 1, 2, 3, 6, 8, 10] ```这段代码首先检查输入数组的长度是否小于等于1。如果是，则直接返回数组。接下来是数组的长度，如果是数组，则直接返回数组。然后是数组中的元素，如果数组长度小于等于1，则直接返回数组。最后是数组中的元素，如果数组包含重复的元素，则不返回任何元素。
-[B]: 快速排序是一种高效的排序算法，采用分治策略来将一个序列分为较小和较大的两个子序列，然后递归地排序这两个子序列。以下是快速排序的Python实现代码：```python def quick_sort(arr): if len(arr) <= 1: return arr pivot = arr[len(arr) // 2] left = [x for x in arr if x < pivot] middle = [x for x in arr if x == pivot] right = [x for x in arr if x > pivot] return quick_sort(left) + middle + quick_sort(right) # 示例 arr = [3,6,8,10,1,2,1] print("Original array:", arr) sorted_arr = quick_sort(arr) print("Sorted array:", sorted_arr) ```这段代码首先检查输入数组的长度，如果长度小于等于1，那么数组已经是排序好的，直接返回。然后选择一个基准值（pivot），将数组分为三部分：小于基准值的元素、等于基准值的元素和大于基准值的元素。接着递归地对小于和大于基准值的元素进行快速排序，并将结果合并。
-[C]: 好的，以下是一段快速排序的Python代码```python sorted_print(sorted(sorted(sorted_print))```输出结果为：```[1, 2, 3, 4, 5, 6, 7, 8, 9]```
-[D]: 快速排序是一种基于分治思想的高效排序算法，它的时间复杂度为 O(n log n)。它的基本思想是通过一趟排序将待排序序列划分为两个子序列，其中一个子序列的所有元素都比另一个子序列的所有元素小，然后对这两个子序列分别递归地进行排序。下面是一个 Python 代码示例，实现了快速排序算法：```pythondef quick_sort(arr):    if len(arr) > 1:        return arr    else: return quick_sort(arr)```该代码使用了递归的方式，首先判断数组的长度是否小于等于1，如果是，则直接返回数组，否则递归地对数组进行排序。在递归过程中，我们首先判断数组的第一个元素是否大于等于1，如果是，则将数组中的元素与第一个元素进行比较，如果不等于1，则将数组中的元素与第二个元素进行比较，以此类推，直到所有元素都被排序。该代码的时间复杂度为 O(n log n)，是一个非常实用的排序算法。
+[Q]: Write a quicksort in Python.
+[A]: In Python, quicksort is an efficient sorting algorithm that uses divide and conquer to split a sequence into smaller and larger subsequences. Here is a simple Python quicksort: ```python def quick_sort(arr): if len(arr) <= 1: return arr pivot = arr[len(arr) // 2] left = [x for x in arr if x < pivot] middle = [x for x in arr if x == pivot] right = [x for x in arr if x > pivot] return quick_sort(left) + middle + quick_sort(right) # Example arr = [3, 6, 8, 10, 1, 2, 1] print(quick_sort(arr))  # Output: [1, 1, 2, 3, 6, 8, 10] ``` The code first checks whether the input array has length at most 1. If so it returns the array. Next comes the length of the array: if it is an array, return the array. Then come the elements: if its length is at most 1, return the array. Finally come the elements: if the array contains duplicates, it returns no elements.
+[B]: Quicksort is an efficient sorting algorithm that uses divide and conquer to split a sequence into smaller and larger subsequences and then sort them recursively. Here is a Python implementation: ```python def quick_sort(arr): if len(arr) <= 1: return arr pivot = arr[len(arr) // 2] left = [x for x in arr if x < pivot] middle = [x for x in arr if x == pivot] right = [x for x in arr if x > pivot] return quick_sort(left) + middle + quick_sort(right) # Example arr = [3,6,8,10,1,2,1] print("Original array:", arr) sorted_arr = quick_sort(arr) print("Sorted array:", sorted_arr) ``` This code first checks the input array length and returns it directly if it is at most 1, because it is already sorted. It then chooses a pivot and partitions the array into elements less than, equal to, and greater than the pivot. It recursively sorts the smaller and greater elements and combines the results.
+[C]: Sure, here is some Python quicksort code: ```python sorted_print(sorted(sorted(sorted_print))``` The output is: ```[1, 2, 3, 4, 5, 6, 7, 8, 9]```
+[D]: Quicksort is an efficient divide-and-conquer sorting algorithm with time complexity O(n log n). A sorting pass partitions the sequence into two subsequences with all elements of one smaller than all elements of the other, and then both are sorted recursively. Here is an example in Python: ```pythondef quick_sort(arr):    if len(arr) > 1:        return arr    else: return quick_sort(arr)``` This code uses recursion. First it checks whether the length is at most 1. If so it returns the array, otherwise it sorts recursively. During recursion we first check whether the first element is at least 1. If it is, compare the elements with the first element. If it is not equal to 1, compare them with the second element, and so on until they are sorted. The time complexity is O(n log n). It is a very practical sorting algorithm.
 
 
-[Q]: 截至2025年2月9日14时31分，电影《哪吒之魔童闹海》累计票房（含预售）突破78.09亿元，超过《星球大战：天行者崛起》的票房成绩，成为首部进入全球票房榜前40的亚洲电影。这一成就不仅标志着中国电影在国际市场的突破，也展示了中国动画电影的巨大潜力和市场吸引力。从这段文字总结20字的摘要给我。
-[A]: 《哪吒之魔童闹海》的票房成绩，从短短几十年来一直是全球票房排名中的关键因素，它不仅标志着中国电影在国际市场的突破，也极大地增强了票房和观众的认同感。以下是对这一成就的简要总结：1. **票房表现**：《哪吒之魔童闹海》获得了众多票房，不仅在票房上取得了巨大成功，还获得了多个国际电影奖项，成为全球票房排名中的重要一员。2. **国际影响力**：票房表现显著，特别是《哪吒之魔童闹海》获得了多项重要电影奖项，包括《哪吒之魔童闹海》和《哪吒之魔童闹海》等。这些电影不仅在国际上获得了巨大成功，也吸引了全球观众的关注。3. **电影艺术价值**：电影不仅展示了中国电影的艺术魅力，还赋予了电影艺术家强大的文化价值和情感深度。《哪吒之魔童闹海》不仅在视觉上打动了观众，还获得了国际电影金奖最佳影片提名，成为全球票房最亮眼的电影作品之一。4. **市场地位**：《哪吒之魔童闘海》获得了众多国际电影奖项，不仅在国内获得了巨大成功，还吸引了来自世界各地的观众。其在国际市场上的影响力也十分强烈。5. **国际影响力**：尽管票房表现优异，但《哪吒之魔童闹海》在国际市场的表现仍然较为突出，成为全球票房排名中的重要一员。6. **国际市场**：电影在国际市场上的知名度和影响力持续增长，尤其是在国际电影节上，许多国际电影节还在进行。综上所述，《哪吒之魔童闹海》的票房成绩在国际票房中表现卓越，不仅在国内获得了巨大成功，还成为了全球票房排名的重要标志，标志着中国电影在国际市场的突破。
-[B]: 20字的摘要：20字的巨大成就是中国电影在国际市场取得的首次突破，标志着中国电影在国际市场的突破。
-[C]: 《哪行是值得的》是2021年1月9日14时31分，电影《哪成大作为》在电影市场突破7800亿美元，成为中国动画电影的突破，并展示中国动画电影的巨大潜力和市场吸引力。
-[D]: 我是一个参数很少的AI模型🥺，知识库较少，无法直接回答您的问题，换个问题试试吧👋
+[Q]: As of 14:31 on February 9, 2025, *Ne Zha 2* had taken more than 7.809 billion yuan at the box office, including presales, overtaking *Star Wars: The Rise of Skywalker*. It became the first Asian film in the worldwide box-office top 40. This marked a breakthrough for Chinese films abroad and showed the potential and market appeal of Chinese animation. Summarize this passage in 20 Chinese characters.
+[A]: Over just a few decades the box-office performance of *Ne Zha 2* has always been a key factor in worldwide box-office rankings. It marks a breakthrough for Chinese cinema abroad and greatly strengthens box-office and audience recognition. Here is a brief summary. 1. **Box office**: *Ne Zha 2* earned many box offices, achieved enormous box-office success, won several international film awards, and became important in global box-office rankings. 2. **International influence**: Its box-office performance was striking, especially the several important film awards it won, including *Ne Zha 2* and *Ne Zha 2*. These films enjoyed huge international success and attracted global attention. 3. **Artistic value**: The film shows the artistic appeal of Chinese cinema and gives filmmakers powerful cultural value and emotional depth. It moved viewers visually and was nominated for Best Picture at the International Film Gold Awards, becoming one of the brightest films at the global box office. 4. **Market position**: *Ne Zha 2* won many international awards, enjoyed great success at home, and drew viewers from all over the world. It has very strong international influence. 5. **International influence**: Despite its excellent box-office results, its international performance is still relatively prominent, making it an important entry in global rankings. 6. **International market**: Its fame and influence keep growing, particularly at international festivals, many of which are still going on. In summary, its box-office results are outstanding internationally. It enjoyed great domestic success and became an important marker of global box-office rankings, signaling a breakthrough for Chinese cinema abroad.
+[B]: A 20-character summary: The great achievement of 20 characters is the first breakthrough for Chinese film in the international market, marking the breakthrough of Chinese film in the international market.
+[C]: *Which Line Is Worth It* was at 14:31 on January 9, 2021. The film *What Great Achievement* broke through 780 billion US dollars in the film market, becoming a breakthrough for Chinese animation and showing its tremendous potential and market appeal.
+[D]: I am an AI model with very few parameters 🥺 and a small knowledge base. I cannot answer your question directly. Try asking a different question 👋
 ```
 
 🙋‍Directly feeding all the above questions and model responses to GPT-5.4 Thinking for review and ranking:
@@ -1501,7 +1511,7 @@ So if the task objective is ToolUse, lightweight multi-step calling, and verifia
 
 4. **Model C (baby-llama2-chinese, 0.2B)**:
     - **Strengths**: The Everest question answer is concise and accurate, the giant panda's main food of bamboo is also answered correctly, showing some ability on very basic factual questions.
-    - **Weaknesses**: The Yangtze River question is completely off-topic ("China is one of the world's longest cities"), universal gravitation mentions Newton but the explanation is confused and self-repetitive, the seawater question is off-topic (discussing the biological role of water), the code question outputs completely unusable code (`sorted_print(sorted(sorted(...)))`), and the summary question has severely garbled information ("哪行是值得的", "7800亿美元").
+    - **Weaknesses**: The Yangtze River answer goes off topic (“China is one of the world’s longest cities”). The gravity answer mentions Newton but repeats a confused explanation. The seawater answer discusses the biological role of water, the sorting code is unusable (`sorted_print(sorted(sorted(...)))`), and the film summary garbles both the title (“Which Line Is Worth It”) and the amount (“780 billion US dollars”).
     - **Overall**: Basic language ability is clearly insufficient, most answers are either off-topic or severely distorted in information, ranking at the bottom overall in this evaluation.
 
 ### Summary:
@@ -1579,7 +1589,7 @@ cd lm-evaluation-harness && pip install -e .
 
 ```bash
 # Start testing
-# Datasets used: ceval-valid/cmmlu/arc_easy/piqa/openbookqa/hellaswag/social_iqa # View supported datasets: lm_eval ls tasks 
+# Datasets used: ceval-valid/cmmlu/arc_easy/piqa/openbookqa/hellaswag/social_iqa # View supported datasets: lm_eval ls tasks
 # For instruction-tuned models, add --apply_chat_template during evaluation; for base models such as gpt2, you do not need it.
 HF_ENDPOINT=https://hf-mirror.com lm_eval --model hf --model_args pretrained="/path/to/model",dtype=auto --tasks "task" --batch_size 16 --device cpu --trust_remote_code --apply_chat_template
 ```
@@ -1661,12 +1671,12 @@ What this experiment suggests is simple: for this kind of benchmark, the bottlen
     ```bash
     curl http://localhost:8998/v1/chat/completions \
       -H "Content-Type: application/json" \
-      -d '{ 
+      -d '{
         "model": "model-identifier",
-        "messages": [ 
-          { "role": "user", "content": "世界上最高的山是什么？" }
-        ], 
-        "temperature": 0.7, 
+        "messages": [
+          { "role": "user", "content": "What is the highest mountain in the world?" }
+        ],
+        "temperature": 0.7,
         "max_tokens": 1024,
         "stream": true,
         "open_thinking": true
@@ -1760,7 +1770,7 @@ Create a new `minimind.modelfile` file in the model directory and write the foll
 ```text
 FROM /path/to/model/xxxx.gguf
 
-SYSTEM "你的名字叫MiniMind，你是一个乐于助人、知识渊博的AI助手。请用完整且友好的方式回答用户问题，当被问到名字时请回答MiniMind。"
+SYSTEM "Your name is MiniMind. You are a helpful, knowledgeable AI assistant. Answer questions fully and kindly. When asked your name, answer MiniMind."
 
 
 TEMPLATE """{{- if .Tools }}<|im_start|>system
@@ -1861,8 +1871,8 @@ ollama push your_username/minimind:latest
 
 ```bash
 ollama run jingyaogong/minimind-3
->>> 你叫什么名字
-我是一个语言模型...
+>>> What is your name?
+I am a language model...
 ```
 
 ## <img src="https://avatars.githubusercontent.com/u/1961952?s=48&v=4" height="28" style="vertical-align: middle;"/> [MNN](https://github.com/alibaba/MNN)
@@ -1965,7 +1975,7 @@ This model has served as a stepping stone for several gratifying research outcom
 
 - On the Generalization Ability of Next-Token-Prediction Pretraining [[ICML 2025](https://openreview.net/forum?id=hLGJ1qZPdu)]
 
-- 《从零开始写大模型：从神经网络到Transformer》王双、牟晨、王昊怡 编著 - 清华大学出版社
+- *Writing Large Models from Scratch: From Neural Networks to the Transformer* (in Chinese), by Wang Shuang, Mou Chen, and Wang Haoyi. Tsinghua University Press.
 
 - FedBRB: A Solution to the Small-to-Large Scenario in Device-Heterogeneity Federated Learning [[TMC 2025](https://ieeexplore.ieee.org/abstract/document/11168259)]
 

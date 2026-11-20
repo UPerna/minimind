@@ -1,22 +1,25 @@
-# 注：不建议再重复训练tokenizer（“词典”），MiniMind已自带，此脚本仅供学习和参考。基于不同词典训练的模型将导致输出完全不统一，降低社区的模型复用性
-# Note: It is not recommended to re-train the tokenizer. MiniMind already includes one. This script is for learning and reference only. Training models with different tokenizers will lead to inconsistent outputs and reduce model reusability in the community.
+# MiniMind ships with a tokenizer. Use this training script for study. Checkpoints trained with a different vocabulary require that vocabulary to produce compatible output.
 import os
 import json
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from dataset.language_examples import TOKENIZER_PASSAGES
 from tokenizers import decoders, models, pre_tokenizers, trainers, Tokenizer
 
 DATA_PATH = '../dataset/sft_t2t_mini.jsonl'
 TOKENIZER_DIR = '../model_learn_tokenizer/'
 VOCAB_SIZE = 6400
 SPECIAL_TOKENS_NUM = 36
-MAX_LINES = 0  # 0 表示读取全部；设为正数则只取前 N 条（快速试跑）
+MAX_LINES = 0  # Read all records when zero, or the first N for a quick run.
 
 def get_texts(data_path, max_lines=MAX_LINES):
-    """逐行产出用于训练 BPE 的文本，兼容两种主线数据格式。
+    """Yield BPE training text line by line from either supported dataset format.
 
-    pretrain_t2t(_mini).jsonl 是 {"text": ...}，
-    sft_t2t(_mini).jsonl 是 {"conversations": [{"role":..., "content":...}, ...]}。
-    原先只解析 conversations，所以把 DATA_PATH 指向预训练语料时一条文本都取不到，
-    BPE 仅基于 initial_alphabet 训练，产出一个没有任何 merge 的词表，且全程不报错。
+    pretrain_t2t(_mini).jsonl contains {"text": ...} records.
+    sft_t2t(_mini).jsonl contains {"conversations": [{"role": ..., "content": ...}, ...]} records.
+    Reading only conversations would silently skip every record in a pretraining corpus.
+    BPE would then learn only the initial alphabet and produce a vocabulary without merges.
     """
     used = 0
     with open(data_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -37,9 +40,9 @@ def get_texts(data_path, max_lines=MAX_LINES):
                 yield text
     if used == 0:
         raise ValueError(
-            f'{data_path} 中没有可用文本：每行应为 {{"text": ...}} 或 '
-            f'{{"conversations": [{{"role":..., "content":...}}, ...]}}。'
-            f'继续训练只会得到一个空词表。'
+            f'{data_path} contains no usable text. Each line should contain {{"text": ...}} or '
+            f'{{"conversations": [{{"role":..., "content":...}}, ...]}}'
+            f'. Continuing would produce an empty vocabulary.'
         )
 
 def train_tokenizer(data_path, tokenizer_dir, vocab_size, special_tokens_num=SPECIAL_TOKENS_NUM):
@@ -59,7 +62,7 @@ def train_tokenizer(data_path, tokenizer_dir, vocab_size, special_tokens_num=SPE
         "<think>", "</think>"
     ]
     num_buffer = special_tokens_num - len(special_tokens_list + additional_tokens_list)
-    buffer_tokens = [f"<|buffer{i}|>" for i in range(1, num_buffer + 1)] # 预留一定数量的token位置
+    buffer_tokens = [f"<|buffer{i}|>" for i in range(1, num_buffer + 1)] # Reserve token IDs for future use.
     all_special_tokens = special_tokens_list + additional_tokens_list + buffer_tokens
     trainer = trainers.BpeTrainer(
         vocab_size=vocab_size,
@@ -130,11 +133,11 @@ def eval_tokenizer(tokenizer_dir):
     from transformers import AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir)
     messages = [
-        {"role": "system", "content": "你是一个优秀的聊天机器人，总是给我正确的回应！"},
-        {"role": "user", "content": '你来自哪里？'},
-        {"role": "assistant", "content": '我来自月球'},
-        {"role": "user", "content": '你到底来自哪里？'},
-        {"role": "assistant", "content": '我来自地球'}
+        {"role": "system", "content": "You are an excellent chatbot. Always give me a correct answer!"},
+        {"role": "user", "content": 'Where do you come from?'},
+        {"role": "assistant", "content": 'I come from the Moon.'},
+        {"role": "user", "content": 'Where do you really come from?'},
+        {"role": "assistant", "content": 'I come from Earth.'}
     ]
     new_prompt = tokenizer.apply_chat_template(
         messages,
@@ -143,22 +146,22 @@ def eval_tokenizer(tokenizer_dir):
     print('-'*100)
     print(new_prompt)
     print('-'*100)
-    print('tokenizer词表长度：', len(tokenizer))
+    print('Tokenizer vocabulary size:', len(tokenizer))
     model_inputs = tokenizer(new_prompt)
-    print('encoder长度：', len(model_inputs['input_ids']))
+    print('Encoded length:', len(model_inputs['input_ids']))
     response = tokenizer.decode(model_inputs['input_ids'], skip_special_tokens=False)
-    print('decoder一致性：', response == new_prompt, "\n")
+    print('Decoding matches the input:', response == new_prompt, "\n")
     print('-'*100)
-    print('压缩率测试（Chars/Tokens）：')
+    print('Compression test (characters per token):')
     test_texts = [
-        # 中文样本 (约200字)
-        "人工智能是计算机科学的一个分支，它企图了解智能的实质，并生产出一种新的能以人类智能相似的方式做出反应的智能机器，该领域的研究包括机器人、语言识别、图像识别、自然语言处理和专家系统等。人工智能从诞生以来，理论和技术日益成熟，应用领域也不断扩大，可以设想，未来人工智能带来的科技产品，将会是人类智慧的“容器”。人工智能可以对人的意识、思维的信息过程的模拟。人工智能不是人的智能，但能像人那样思考、也可能超过人的智能。",
-        "星际航行是指在星系内甚至星系间的空间中进行的航行。由于宇宙空间极其广阔，传统的化学火箭动力在恒星间航行时显得力不从心。科学家们提出了多种方案，包括离子推进器、核热火箭、甚至是利用反物质作为能源的设想。此外，曲率驱动和虫洞旅行等科幻概念也在理论物理研究中被反复探讨。尽管目前人类的足迹仅限于月球，但随着核聚变技术和材料科学的突破，前往火星乃至更遥远的太阳系边缘将成为可能。",
-        # 英文样本 (约200词/字符)
+        # Chinese samples (roughly 200 characters each)
+        TOKENIZER_PASSAGES[0][0],
+        TOKENIZER_PASSAGES[1][0],
+        # English samples
         "Large language models (LLMs) are a type of artificial intelligence (AI) trained on vast amounts of text data to understand and generate human-like language. These models use deep learning techniques, specifically transformers, to process and predict the next word in a sequence. LLMs like GPT-4, Llama, and Claude have demonstrated remarkable capabilities in coding, translation, and creative writing. However, they also face challenges such as hallucinations, where the model generates factually incorrect information, and the need for significant computational resources.",
         "The development of sustainable energy is crucial for the future of our planet. As climate change continues to impact global weather patterns, transitioning from fossil fuels to renewable sources like solar, wind, and hydroelectric power has become an urgent priority. Innovations in battery storage technology and smart grid management are essential to ensure a reliable energy supply. International cooperation and policy frameworks are also necessary to drive the global shift towards a greener economy and reduce carbon emissions.",
-        # 混合样本
-        "Python 是一种高级编程语言，以其简洁的语法和强大的生态系统而闻名。It is widely used in data science, machine learning, and web development. 开发者可以利用 NumPy, Pandas, and PyTorch 等库快速构建复杂的应用。学习 Python 的过程非常愉快，因为它的代码读起来就像英语一样。Whether you are a beginner or an expert, Python offers something for everyone.",
+        # Mixed Chinese and English sample
+        TOKENIZER_PASSAGES[2][0],
     ]
     
     total_compression = 0
@@ -168,11 +171,11 @@ def eval_tokenizer(tokenizer_dir):
         char_count = len(text)
         compression_ratio = char_count / token_count
         total_compression += compression_ratio
-        print(f"样本 {i+1} | 字符数: {char_count:4} | Tokens: {token_count:3} | 压缩率: {compression_ratio:.2f}")
+        print(f"Sample {i+1} | Characters: {char_count:4} | Tokens: {token_count:3} | Characters per token: {compression_ratio:.2f}")
     
-    print(f"平均压缩率: {total_compression / len(test_texts):.2f}")
+    print(f"Mean characters per token: {total_compression / len(test_texts):.2f}")
     print('-'*100)
-    print('流式解码（字节缓冲）测试：')
+    print('Streaming decode test (buffering bytes):')
     input_ids = model_inputs['input_ids']
     token_cache = []
     for tid in input_ids:

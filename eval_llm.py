@@ -31,39 +31,39 @@ def init_model(args):
     return model.half().eval().to(args.device), tokenizer
 
 def main():
-    parser = argparse.ArgumentParser(description="MiniMind模型推理与对话")
-    parser.add_argument('--load_from', default='model', type=str, help="模型加载路径（model=原生torch权重，其他路径=transformers格式）")
-    parser.add_argument('--save_dir', default='out', type=str, help="模型权重目录")
-    parser.add_argument('--weight', default='full_sft', type=str, help="权重名称前缀（pretrain, full_sft, rlhf, reason, ppo_actor, grpo, spo）")
-    parser.add_argument('--lora_weight', default='None', type=str, help="LoRA权重名称（None表示不使用，可选：lora_identity, lora_medical）")
-    parser.add_argument('--lora_rank', default=16, type=int, help="LoRA rank，需与训练时一致（默认16）")
-    parser.add_argument('--hidden_size', default=768, type=int, help="隐藏层维度")
-    parser.add_argument('--num_hidden_layers', default=8, type=int, help="隐藏层数量")
-    parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="是否使用MoE架构（0=否，1=是）")
-    parser.add_argument('--inference_rope_scaling', default=False, action='store_true', help="启用RoPE位置编码外推（4倍，仅解决位置编码问题）")
-    parser.add_argument('--max_new_tokens', default=8192, type=int, help="最大生成长度（注意：并非模型实际长文本能力）")
-    parser.add_argument('--temperature', default=0.85, type=float, help="生成温度，控制随机性（0-1，越大越随机）")
-    parser.add_argument('--top_p', default=0.95, type=float, help="nucleus采样阈值（0-1）")
-    parser.add_argument('--open_thinking', default=0, type=int, help="是否开启自适应思考（0=否，1=是）")
-    parser.add_argument('--historys', default=0, type=int, help="携带历史对话轮数（需为偶数，0表示不携带历史）")
-    parser.add_argument('--show_speed', default=1, type=int, help="显示decode速度（tokens/s）")
-    parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="运行设备")
+    parser = argparse.ArgumentParser(description="Run inference or chat with MiniMind")
+    parser.add_argument('--load_from', default='model', type=str, help="Model path: use model for native PyTorch weights or a directory in Transformers format")
+    parser.add_argument('--save_dir', default='out', type=str, help="Directory containing model weights")
+    parser.add_argument('--weight', default='full_sft', type=str, help="Weight filename prefix (pretrain, full_sft, rlhf, reason, ppo_actor, grpo, spo)")
+    parser.add_argument('--lora_weight', default='None', type=str, help="LoRA weights to load (None, lora_identity, or lora_medical)")
+    parser.add_argument('--lora_rank', default=16, type=int, help="LoRA rank used during training (default: 16)")
+    parser.add_argument('--hidden_size', default=768, type=int, help="Hidden size")
+    parser.add_argument('--num_hidden_layers', default=8, type=int, help="Number of hidden layers")
+    parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="Use the MoE architecture (0 = no, 1 = yes)")
+    parser.add_argument('--inference_rope_scaling', default=False, action='store_true', help="Enable 4x RoPE extrapolation for position encoding")
+    parser.add_argument('--max_new_tokens', default=8192, type=int, help="Maximum number of new tokens; the effective context capability depends on the model")
+    parser.add_argument('--temperature', default=0.85, type=float, help="Sampling temperature (0 to 1; higher values increase randomness)")
+    parser.add_argument('--top_p', default=0.95, type=float, help="Nucleus sampling threshold (0 to 1)")
+    parser.add_argument('--open_thinking', default=0, type=int, help="Enable adaptive thinking (0 = no, 1 = yes)")
+    parser.add_argument('--historys', default=0, type=int, help="Number of messages from earlier turns to include (even; 0 disables history)")
+    parser.add_argument('--show_speed', default=1, type=int, help="Show decoding speed in tokens per second")
+    parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="Device for inference")
     args = parser.parse_args()
     
     prompts = [
-        '你有什么特长？',
-        '为什么天空是蓝色的',
-        '请用Python写一个计算斐波那契数列的函数',
-        '解释一下"光合作用"的基本过程',
-        '如果明天下雨，我应该如何出门',
-        '比较一下猫和狗作为宠物的优缺点',
-        '解释什么是机器学习',
-        '推荐一些中国的美食'
+        'What are you good at?',
+        'Why is the sky blue?',
+        'Write a Python function that computes the Fibonacci sequence.',
+        'Explain how photosynthesis works.',
+        'How should I prepare to go outside if it rains tomorrow?',
+        'Compare the advantages and disadvantages of cats and dogs as pets.',
+        'Explain machine learning.',
+        'Which Chinese dishes would you recommend?'
     ]
     
     conversation = []
     model, tokenizer = init_model(args)
-    input_mode = int(input('[0] 自动测试\n[1] 手动输入\n'))
+    input_mode = int(input('[0] Run the example prompts\n[1] Enter prompts manually\n'))
     streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
     
     prompt_iter = prompts if input_mode == 0 else iter(lambda: input('💬: '), '')

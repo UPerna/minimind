@@ -43,7 +43,7 @@ def init_model(args):
             load_lora(model, f'../{args.save_dir}/{args.lora_weight}_{args.hidden_size}{moe_suffix}.pth')
     else:
         model = AutoModelForCausalLM.from_pretrained(args.load_from, trust_remote_code=True)
-    print(f'MiniMind模型参数量: {sum(p.numel() for p in model.parameters()) / 1e6:.2f} M(illion)')
+    print(f'MiniMind parameter count: {sum(p.numel() for p in model.parameters()) / 1e6:.2f} million')
     return model.half().eval().to(device), tokenizer
 
 
@@ -59,7 +59,7 @@ class ChatRequest(BaseModel):
     chat_template_kwargs: dict = None
     
     def get_open_thinking(self) -> bool:
-        """兼容多种方式开启 thinking"""
+        """Accept the supported ways of enabling thinking."""
         if self.open_thinking:
             return True
         if self.chat_template_kwargs:
@@ -259,17 +259,17 @@ def chat_completions(request: ChatRequest):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Server for MiniMind")
-    parser.add_argument('--load_from', default='../model', type=str, help="模型加载路径（model=原生torch权重，其他路径=transformers格式）")
-    parser.add_argument('--save_dir', default='out', type=str, help="模型权重目录")
-    parser.add_argument('--weight', default='full_sft', type=str, help="权重名称前缀（pretrain, full_sft, dpo, reason, ppo_actor, grpo, spo）")
-    parser.add_argument('--lora_weight', default='None', type=str, help="LoRA权重名称（None表示不使用，可选：lora_identity, lora_medical）")
-    parser.add_argument('--lora_rank', default=16, type=int, help="LoRA rank，需与训练时一致（默认16）")
-    parser.add_argument('--hidden_size', default=768, type=int, help="隐藏层维度")
-    parser.add_argument('--num_hidden_layers', default=8, type=int, help="隐藏层数量")
-    parser.add_argument('--max_seq_len', default=8192, type=int, help="最大序列长度")
-    parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="是否使用MoE架构（0=否，1=是）")
-    parser.add_argument('--inference_rope_scaling', default=False, action='store_true', help="启用RoPE位置编码外推（4倍，仅解决位置编码问题）")
-    parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="运行设备")
+    parser.add_argument('--load_from', default='../model', type=str, help="Model path: use model for native PyTorch weights or a directory in Transformers format")
+    parser.add_argument('--save_dir', default='out', type=str, help="Directory containing model weights")
+    parser.add_argument('--weight', default='full_sft', type=str, help="Weight filename prefix (pretrain, full_sft, dpo, reason, ppo_actor, grpo, spo)")
+    parser.add_argument('--lora_weight', default='None', type=str, help="LoRA weights to load (None, lora_identity, or lora_medical)")
+    parser.add_argument('--lora_rank', default=16, type=int, help="LoRA rank used during training (default: 16)")
+    parser.add_argument('--hidden_size', default=768, type=int, help="Hidden size")
+    parser.add_argument('--num_hidden_layers', default=8, type=int, help="Number of hidden layers")
+    parser.add_argument('--max_seq_len', default=8192, type=int, help="Maximum sequence length")
+    parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="Use the MoE architecture (0 = no, 1 = yes)")
+    parser.add_argument('--inference_rope_scaling', default=False, action='store_true', help="Enable 4x RoPE extrapolation for position encoding")
+    parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="Device for inference")
     args = parser.parse_args()
     device = args.device
     model, tokenizer = init_model(args)
