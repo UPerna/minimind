@@ -6,19 +6,39 @@ import unittest
 from fractions import Fraction
 from pathlib import Path
 
+import torch
+from transformers import AutoTokenizer, Qwen3Config, Qwen3ForCausalLM
+
 from scripts.compare_curricula import case_bytes, evaluation_cases
-from scripts.eval_belebele_slice import LANGUAGES as READING_LANGUAGES, prompt as reading_prompt, selected_keys
+from scripts.eval_belebele_slice import LANGUAGES as READING_LANGUAGES, answer_scores, prompt as reading_prompt, selected_keys
 from scripts.grounded_curriculum import FIELDS, LANGUAGES, PAIRS, SPLITS, make_cases, write_datasets
 
 
 class GroundedCurriculumTests(unittest.TestCase):
+    def test_conditional_answer_scores_match_unpadded_cross_entropy(self):
+        tokenizer_path = Path(__file__).resolve().parents[1] / "model"
+        tok = AutoTokenizer.from_pretrained(tokenizer_path, local_files_only=True)
+        tok.padding_side = "left"
+        config = Qwen3Config(hidden_size=32, intermediate_size=64, num_hidden_layers=1,
+                             num_attention_heads=4, num_key_value_heads=2, head_dim=8, vocab_size=128)
+        model = Qwen3ForCausalLM(config).eval()
+        batch = [([1, 5, 7, 9], [20, 74]), ([1, 12], [11, 24, 31])]
+        observed = answer_scores(model, tok, batch, "cpu")
+        with torch.no_grad():
+            for score, (prefix, answer) in zip(observed, batch):
+                logits = model(torch.tensor([prefix + answer])).logits[0, len(prefix)-1:-1]
+                expected = -torch.nn.functional.cross_entropy(logits, torch.tensor(answer)).item()
+                self.assertAlmostEqual(score, expected, places=5)
+
     def test_reading_items_are_balanced_and_rotation_changes_positions(self):
         data = {}
         for lang in READING_LANGUAGES:
             data[lang] = {(f"source-{i}", q): {"correct_answer_num": str(1 + i % 4),
-                          "flores_passage": f"Passage {i}"} for i in range(32) for q in (1, 2)}
+                          "flores_passage": f"Passage {i}"} for i in range(70) for q in (1, 2)}
         keys = selected_keys(data)
         self.assertEqual(len({key[0] for key in keys}), 24)
+        new_keys = selected_keys(data, "minimind-likelihood-v1", excluded=keys)
+        self.assertTrue({k[0] for k in keys}.isdisjoint(k[0] for k in new_keys))
         for i in range(1, 5):
             self.assertEqual(sum(data["en"][key]["correct_answer_num"] == str(i) for key in keys), 6)
         row = {"flores_passage": "Text", "question": "Which?", **{f"mc_answer{i}": str(i) for i in range(1, 5)}}
