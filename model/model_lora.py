@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import torch
+from safetensors.torch import load_file, save_file
 from torch import optim, nn
 
 
@@ -34,14 +37,21 @@ def apply_lora(model, rank=16, lora_alpha=None):
             module.forward = forward_with_lora
 
 
-def load_lora(model, path):
-    state_dict = torch.load(path, map_location=model.device)
+def load_lora(model, path, strict=False):
+    if Path(path).suffix == ".safetensors":
+        state_dict = load_file(str(path))
+    else:
+        state_dict = torch.load(path, map_location=model.device, weights_only=True)
     state_dict = {(k[7:] if k.startswith('module.') else k): v for k, v in state_dict.items()}
+    if strict:
+        expected = {k for k in model.state_dict() if ".lora." in k}
+        if set(state_dict) != expected:
+            raise ValueError("Adapter tensor keys do not match this model's LoRA layers")
 
     for name, module in model.named_modules():
         if hasattr(module, 'lora'):
             lora_state = {k.replace(f'{name}.lora.', ''): v for k, v in state_dict.items() if f'{name}.lora.' in k}
-            module.lora.load_state_dict(lora_state, strict=False)
+            module.lora.load_state_dict(lora_state, strict=strict)
 
 
 def save_lora(model, path):
@@ -53,11 +63,14 @@ def save_lora(model, path):
             lora_state = {f'{clean_name}.lora.{k}': v.cpu().half() if k.endswith('.weight') else v.cpu().float()
                           for k, v in module.lora.state_dict().items()}
             state_dict.update(lora_state)
-    torch.save(state_dict, path)
+    if Path(path).suffix == ".safetensors":
+        save_file(state_dict, str(path))
+    else:
+        torch.save(state_dict, path)
 
 
-def merge_lora(model, lora_path, save_path):
-    load_lora(model, lora_path)
+def merge_lora(model, lora_path, save_path, strict=False):
+    load_lora(model, lora_path, strict=strict)
     raw_model = getattr(model, '_orig_mod', model)
     state_dict = {k: v.cpu().half() for k, v in raw_model.state_dict().items() if '.lora.' not in k}
     for name, module in raw_model.named_modules():

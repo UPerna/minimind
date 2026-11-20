@@ -1,0 +1,631 @@
+{
+  "dataset": "facebook/belebele",
+  "revision": "7899cdfa4e1e0d733fd77c848e2c273cb1d32be2",
+  "weights_sha256": "04b707adc604e78e978766f3b3d5d1a8a80734553c18592a95e1ad6f34b68ee9",
+  "torch": "2.6.0+cpu",
+  "transformers": "4.57.6",
+  "dtype": "float32",
+  "device": "cpu",
+  "threads": 2,
+  "batch_size": 4,
+  "letter_token_ids": [
+    68,
+    69,
+    70,
+    71
+  ],
+  "displayed_letters": {
+    "A": 119,
+    "B": 2,
+    "C": 21,
+    "D": 2
+  },
+  "summary": {
+    "en": {
+      "items": 24,
+      "original_correct": 7,
+      "rotated_correct": 5,
+      "both_correct": 0,
+      "same_answer": 2
+    },
+    "it": {
+      "items": 24,
+      "original_correct": 9,
+      "rotated_correct": 6,
+      "both_correct": 0,
+      "same_answer": 0
+    },
+    "zh": {
+      "items": 24,
+      "original_correct": 6,
+      "rotated_correct": 6,
+      "both_correct": 0,
+      "same_answer": 0
+    },
+    "all": {
+      "items": 72,
+      "original_correct": 22,
+      "rotated_correct": 17,
+      "both_correct": 0,
+      "same_answer": 2
+    }
+  },
+  "results": [
+    {
+      "link": "https://en.wikinews.org/wiki/Spam_mailer_gets_9_year_jail_sentence",
+      "question_number": 2,
+      "language": "en",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Spam_mailer_gets_9_year_jail_sentence",
+      "question_number": 2,
+      "language": "it",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Spam_mailer_gets_9_year_jail_sentence",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:World_Heritage_Sites/Botanic_Gardens",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:World_Heritage_Sites/Botanic_Gardens",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:World_Heritage_Sites/Botanic_Gardens",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Talk",
+      "question_number": 2,
+      "language": "en",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Talk",
+      "question_number": 2,
+      "language": "it",
+      "gold": "B",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Talk",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Travel_writing",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "original": "B",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Travel_writing",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Travel_writing",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Angkor_Archaeological_Park",
+      "question_number": 2,
+      "language": "en",
+      "gold": "C",
+      "original": "C",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Angkor_Archaeological_Park",
+      "question_number": 2,
+      "language": "it",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Angkor_Archaeological_Park",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:The_Elements/Hydrogen",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:The_Elements/Hydrogen",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:The_Elements/Hydrogen",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Salar_de_Uyuni",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Salar_de_Uyuni",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Salar_de_Uyuni",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Applied_Ecology/Nature_Tourism",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Applied_Ecology/Nature_Tourism",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Applied_Ecology/Nature_Tourism",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Russian_military_cargo_jet_crash_kills_eleven_in_Siberia",
+      "question_number": 2,
+      "language": "en",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Russian_military_cargo_jet_crash_kills_eleven_in_Siberia",
+      "question_number": 2,
+      "language": "it",
+      "gold": "C",
+      "original": "C",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Russian_military_cargo_jet_crash_kills_eleven_in_Siberia",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Dark_matter_lacks_extra_gravitational_force",
+      "question_number": 2,
+      "language": "en",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Dark_matter_lacks_extra_gravitational_force",
+      "question_number": 2,
+      "language": "it",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Dark_matter_lacks_extra_gravitational_force",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Amazon_to_buy_smart_doorbell_startup_Ring",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Amazon_to_buy_smart_doorbell_startup_Ring",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "original": "D",
+      "rotated": "A"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Amazon_to_buy_smart_doorbell_startup_Ring",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:Ancient_Civilizations/Babylonians",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "original": "B",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:Ancient_Civilizations/Babylonians",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Wikijunior:Ancient_Civilizations/Babylonians",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/French_phrasebook",
+      "question_number": 1,
+      "language": "en",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/French_phrasebook",
+      "question_number": 1,
+      "language": "it",
+      "gold": "C",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/French_phrasebook",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "C",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Amsterdam/Canal_District",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Amsterdam/Canal_District",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Amsterdam/Canal_District",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Grand_old_hotels",
+      "question_number": 2,
+      "language": "en",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Grand_old_hotels",
+      "question_number": 2,
+      "language": "it",
+      "gold": "D",
+      "original": "A",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Grand_old_hotels",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Introduction_to_Sociology/Race_and_Ethnicity",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Introduction_to_Sociology/Race_and_Ethnicity",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Introduction_to_Sociology/Race_and_Ethnicity",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/All_About_Converting_From_Several_Video_Formats_To_DVD",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/All_About_Converting_From_Several_Video_Formats_To_DVD",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/All_About_Converting_From_Several_Video_Formats_To_DVD",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Guanajuato",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "original": "A",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Guanajuato",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "original": "A",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Guanajuato",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Valley_of_the_Kings",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Valley_of_the_Kings",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikivoyage.org/wiki/Valley_of_the_Kings",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Patient_under_evaluation_with_Ebola-like_symptoms_in_Washington_D.C.",
+      "question_number": 1,
+      "language": "en",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Patient_under_evaluation_with_Ebola-like_symptoms_in_Washington_D.C.",
+      "question_number": 1,
+      "language": "it",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/Patient_under_evaluation_with_Ebola-like_symptoms_in_Washington_D.C.",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/China%27s_economy_surpasses_Japan%27s_in_second_quarter",
+      "question_number": 2,
+      "language": "en",
+      "gold": "B",
+      "original": "C",
+      "rotated": "D"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/China%27s_economy_surpasses_Japan%27s_in_second_quarter",
+      "question_number": 2,
+      "language": "it",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/China%27s_economy_surpasses_Japan%27s_in_second_quarter",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "B",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/High_School_Earth_Science/Telescopes",
+      "question_number": 1,
+      "language": "en",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/High_School_Earth_Science/Telescopes",
+      "question_number": 1,
+      "language": "it",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/High_School_Earth_Science/Telescopes",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "D",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Accordion/Right_hand",
+      "question_number": 2,
+      "language": "en",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Accordion/Right_hand",
+      "question_number": 2,
+      "language": "it",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikibooks.org/wiki/Accordion/Right_hand",
+      "question_number": 2,
+      "language": "zh",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/India%27s_flag_lands_on_Moon",
+      "question_number": 1,
+      "language": "en",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/India%27s_flag_lands_on_Moon",
+      "question_number": 1,
+      "language": "it",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    },
+    {
+      "link": "https://en.wikinews.org/wiki/India%27s_flag_lands_on_Moon",
+      "question_number": 1,
+      "language": "zh",
+      "gold": "A",
+      "original": "A",
+      "rotated": "B"
+    }
+  ]
+}
